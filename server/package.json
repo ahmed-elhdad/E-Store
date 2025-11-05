@@ -1,0 +1,10 @@
+{
+  "name": "products-service",
+  "version": "1.0.0",
+  "description": "Product Management Microservice",
+  "main": "index.js",
+  "scripts": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

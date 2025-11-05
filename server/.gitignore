@@ -1,0 +1,7 @@
+node_modules/
+.env*
+*.log
+/dist
+PROJECT_PLAN.md
+client/.env*
+server/.env*
