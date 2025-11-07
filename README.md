@@ -1,50 +1,16 @@
-# موقع التجارة الإلكترونية
+# React + Vite
 
-## نظرة عامة
-مشروع موقع تجارة إلكترونية باستخدام:
-- **Backend**: Node.js مع بنية Microservices
-- **Frontend**: React
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## المميزات المطلوبة
-- إدارة المستخدمين: إضافة، تعديل، حذف
-- إدارة المنتجات: إضافة، تعديل، حذف
-- سلة التسوق: إضافة منتجات، تعديل، حذف
+Currently, two official plugins are available:
 
-## بنية Microservices
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-### 1. User Service (خدمة المستخدمين)
-- إدارة المستخدمين (CRUD)
-- المصادقة والتفويض
-- الملفات: `users-service/`
+## React Compiler
 
-### 2. Product Service (خدمة المنتجات)
-- إدارة المنتجات (CRUD)
-- الملفات: `products-service/`
+The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
 
-### 3. Cart Service (خدمة سلة التسوق)
-- إدارة سلة التسوق
-- إضافة/حذف/تعديل المنتجات في السلة
-- الملفات: `cart-service/`
+## Expanding the ESLint configuration
 
-### 4. API Gateway
-- نقطة الدخول الوحيدة للخدمات
-- التوجيه والتحميل الموازن
-- الملفات: `api-gateway/`
-
-### 5. Shared (مشترك)
-- نماذج البيانات المشتركة
-- أدوات مساعدة
-- الملفات: `shared/`
-
-## بنية Frontend (React)
-- واجهة المستخدم
-- مكونات تفاعلية
-- إدارة الحالة
-- الملفات: `frontend/`
-
-## التقنيات المستخدمة
-- **Backend**: Node.js, Express.js
-- **Frontend**: React, React Router
-- **Database**: MongoDB (مقترح)
-- **Communication**: REST APIs
-- **Containerization**: Docker (اختياري)
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
