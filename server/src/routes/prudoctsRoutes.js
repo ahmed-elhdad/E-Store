@@ -8,6 +8,6 @@ import {
 const router = express.Router();
 router.post("/createPrudoct", createPrudoct);
 router.put("/editPrudoct", editPrudoct);
-router.post("prudocts", getPrudocts);
+router.get("prudocts", getPrudocts);
 router.post("/removePrudoct", removePrudoct);
 export default router;
