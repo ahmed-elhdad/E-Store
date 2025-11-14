@@ -27,8 +27,9 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    default: "user",
+    default: ["saler", "user", "admin", "both"],
   },
+  cart: [],
   isVerified: {
     required: true,
     default: false,
