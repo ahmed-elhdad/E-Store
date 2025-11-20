@@ -5,6 +5,7 @@ import verifyToken from "../middleware/verifyToken.js";
 const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,63}$/;
 import dotenv from "dotenv";
 import { idValidation } from "../middleware/idValidation.js";
+import { CheckExit } from "../middleware/checkExit.js";
 dotenv.config();
 export class AuthService {
   static async me(data, res) {
@@ -15,7 +16,7 @@ export class AuthService {
       res.status(301).json({ error: "Valid user id or token" });
       return;
     }
-    const existingUser = User.findOne({ _id: userId });
+    const existingUser = CheckExit.checkUserById(userId);
     if (!existingUser) {
       res.status(404).json({ error: "not found user" });
       return;
@@ -33,7 +34,7 @@ export class AuthService {
         res.status(400).json({ message: "Invalid email format" });
         return;
       }
-      const existing = await User.findOne({ email });
+      const existing = CheckExit.checkUserByEmail(email);
       if (existing) {
         res.status(409).json({ message: "User already exists" });
         return;
@@ -54,7 +55,7 @@ export class AuthService {
         res.status(400).json({ message: "Email and password required" });
         return;
       }
-      const user = await User.findOne({ email });
+      const user = CheckExit.checkUserByEmail(email);
       if (!user) {
         res.status(404).json({ message: "User not found" });
         return;
@@ -114,13 +115,13 @@ export class AuthService {
 
   static async delUser(data, res) {
     try {
-      const { id } = data; // Removed 'await'
-      const exit = await User.findOne({ _id: id }); // Added 'await'
+      const { id } = data;
+      const exit = CheckExit.checkUserById(id);
       if (!exit) {
         res.status(404).json({ error: "User not found" });
         return;
       }
-      await User.findOneAndDelete({ _id: id }); // Added 'await', removed .save()
+      await User.findOneAndDelete({ _id: id });
       res.status(200).json({ message: "User deleted successfully" });
     } catch (err) {
       res.status(500).json({ message: err.message });

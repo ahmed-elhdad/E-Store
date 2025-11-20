@@ -1,8 +1,11 @@
 import { WishListService } from "../services/wishListService.js";
-
-export const createWishList = () => {
-  WishListService.createWishList(req.body, res);
+export const getWishList = (req, res) => {
+  WishListService.getWishList(req.body, res);
 };
-export const addPrudoctToWishList = () => {};
-export const removePrudoctFromWishList = () => {};
-export const removeWishList = () => {};
+
+export const addPrudoctToWishList = (req, res) => {
+  WishListService.addPrudoctToWishList(req.body, res);
+};
+export const removePrudoctFromWishList = (req, res) => {
+  WishListService.removePrudoctFromWishList(req.body, res);
+};

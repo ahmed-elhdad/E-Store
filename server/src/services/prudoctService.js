@@ -1,6 +1,7 @@
 import Prudoct from "../models/Prudoct.model.js";
 import User from "../models/User.model.js";
 import { idValidation } from "../middleware/idValidation.js";
+import { CheckExit } from "../middleware/checkExit.js";
 export class PrudoctService {
   static async getPrudoct(data, res) {
     const { id } = await data;
@@ -9,7 +10,7 @@ export class PrudoctService {
       res.status(301).json({ error: "Valid Id" });
       return;
     }
-    const exit = Prudoct.findOne({ _id: id });
+    const exit = CheckExit.checkPrudoctById(id);
     if (!exit) {
       res.status(404).json({ error: "not found prudoct" });
       return;
@@ -22,7 +23,7 @@ export class PrudoctService {
       res.json({ message: "valid category" });
       return;
     }
-    const prudocts = Prudoct.find({ category: category });
+    const prudocts = CheckExit.checkPrudoctByCategory(category);
     res.status(201).json({ data: prudocts });
   }
   static async createPrudoct(data, res) {
@@ -51,7 +52,7 @@ export class PrudoctService {
         return;
       }
       const prudoctExit = Prudoct.find({ title: title });
-      const salerExit = User.find({ email: saler });
+      const salerExit = CheckExit.checkUserByEmail(saler);
       if (prudoctExit) {
         res.status(301).json({ error: "the prudoct exits" });
         return;
@@ -108,7 +109,7 @@ export class PrudoctService {
         return res.status(400).json({ error: "valid id" });
       }
 
-      const prudoct = await Prudoct.findById(id);
+      const prudoct = CheckExit.checkPrudoctById(id);
       if (!prudoct) {
         return res.status(404).json({ error: "Prudoct not found" });
       }
@@ -121,7 +122,7 @@ export class PrudoctService {
       }
 
       if (saler) {
-        const salerUser = await User.findOne({ email: saler });
+        const salerUser = CheckExit.checkUserByEmail(saler);
         if (!salerUser) {
           return res.status(404).json({ error: "User not found" });
         }

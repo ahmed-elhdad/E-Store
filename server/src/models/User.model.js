@@ -21,6 +21,8 @@ const userSchema = new mongoose.Schema({
     required: true,
   },
   cart: [],
+  wishList: [],
+  orders: [],
   createdAt: {
     type: Date,
     default: date.getDay(),
@@ -29,7 +31,11 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: "user",
   },
-  cart: [],
+  total_price: {
+    type: Number,
+    required: false,
+    default: 0,
+  },
   isVerified: {
     required: false,
     default: false,

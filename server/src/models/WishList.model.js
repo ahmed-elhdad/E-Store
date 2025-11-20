@@ -6,4 +6,4 @@ const wishListSchema = mongoose.Schema({
     required: true,
   },
 });
-export default mongoose.model("WishList",wishListSchema)
+export default mongoose.model("WishList", wishListSchema);

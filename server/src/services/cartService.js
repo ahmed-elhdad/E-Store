@@ -2,7 +2,7 @@ import User from "../models/User.model.js";
 import Cart from "../models/Cart.model.js";
 import { idValidation } from "../middleware/idValidation.js";
 import Prudoct from "../models/Prudoct.model.js";
-
+import { CheckExit } from "../middleware/checkExit.js";
 export class CartService {
   static async getCart(data, res) {
     try {
@@ -11,7 +11,7 @@ export class CartService {
       if (!isValidId) {
         res.status(301).json({ error: "valid Id" });
       }
-      const existing = User.findOne({ userId });
+      const existing = CheckExit.checkUserByEmail(email);
       if (!existing) {
         res.status(404).json({ error: "not found user" });
         return;
@@ -30,7 +30,7 @@ export class CartService {
       const { userId, token } = data;
       // Compelet with JWT verify
       const isValidId = idValidation(userId);
-      const existing = User.findOne({ _id: id });
+      const existing = CheckExit.checkUserById(userId);
       if (!isValidId) {
         res.status(301).json({ error: "valid userId" });
         return;
@@ -54,7 +54,7 @@ export class CartService {
         res.status(301).json({ error: "Valid id" });
         return;
       }
-      const existingUser = User.findOne({ _id: userId });
+      const existingUser = CheckExit.checkUserById(userId);
       const existingCart = Cart.findOne({ _id: cartId });
       if (!existingUser || !existingCart) {
         res.status(404).json({ error: "Not found user or cart" });
@@ -85,9 +85,9 @@ export class CartService {
         return;
       }
       // Check if data exit
-      const existingUser = User.findOne({ _id: userId });
+      const existingUser = CheckExit.checkUserById(userId);
       const existingCart = existingUser.cart.findOne({ _id: cartId });
-      const existingPrudoct = Prudoct.findOne({ _id: prudoctId });
+      const existingPrudoct = CheckExit.checkPrudoctById(prudoctId);
       if (!existingUser || !existingCart || !existingPrudoct) {
         res.status(404).json({ error: "not found prudoct or cart or user" });
         return;
@@ -124,7 +124,7 @@ export class CartService {
           .json({ error: "Prudoct Quantity required or valid prudoct id" });
         return;
       }
-      const existing = User.findOne({ _id: userId });
+      const existing = CheckExit.checkUserById(userId);
       if (!existing) {
         res.status(404).json({ error: "Not found user" });
         return;
@@ -158,8 +158,8 @@ export class CartService {
         res.status(301).json({ error: "Prudoct Id or prudoct id are valid" });
         return;
       }
-      const existingUser = User.findOne({ _id: userId });
-      const existingPrudoct = Prudoct.findOne({ _id: prudoctId });
+      const existingUser = CheckExit.checkUserById(userId);
+      const existingPrudoct = CheckExit.checkPrudoctById(prudoctId);
 
       if (!existingUser || !existingPrudoct) {
         res.status(404).json({ error: "Not found user or prudoct" });
