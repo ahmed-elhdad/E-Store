@@ -1,28 +1,30 @@
-import React, { createContext, useEffect, useState } from "react";
+import React, { createContext, useMemo, useState } from "react";
+import { usePrudoctList } from "../api/hooks/usePrudoct";
 export const TechPrudoctsContext = createContext();
 const TechPrudoctsContextProvider = ({ children }) => {
-  const [isLoaded, setIsLoaded] = useState(false),
-    [prudocts, setPrudocts] = useState([]);
-  const getPrudocts = () => {
-    const res = [
-      {
-        img: "/public/clean_tools.png",
-        name: "fdsafdas",
-        description: "fdfadfdsfdsafsdfdsfdasfdsfdsfdsa",
-        price: 40,
-      },
-    ];
-    setPrudocts(res);
-    if (prudocts.length > 0) {
-      setIsLoaded(true);
-    } else {
-      setIsLoaded(false);
+  const [prdcts, setPrudocts] = useState([{}]);
+  const placeholderData = useMemo(() => prdcts, []);
+
+  const {
+    data: prudocts = placeholderData,
+    isPending,
+    isFetching,
+    refetch,
+    error,
+  } = usePrudoctList(
+    { category: "tech" },
+    {
+      placeholderData,
     }
+  );
+
+  const value = {
+    prudocts,
+    isLoaded: !(isPending || isFetching),
+    refresh: refetch,
+    error,
   };
-  useEffect(() => {
-    getPrudocts();
-  }, []);
-  const value = { isLoaded, setIsLoaded, prudocts, setPrudocts };
+
   return (
     <TechPrudoctsContext.Provider value={value}>
       {children}

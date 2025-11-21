@@ -21,6 +21,8 @@ export class WishListService {
       const wishListItems = await Promise.all(
         user.wishList.map(async (productId) => {
           const product = await Prudoct.findById(productId);
+          product.saved + 1;
+          await product.save();
           return product;
         })
       );

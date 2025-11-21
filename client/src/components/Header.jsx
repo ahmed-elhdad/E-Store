@@ -10,7 +10,7 @@ const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <IconContext.Provider value={{ size: "1.1rem", className: "react-icon" }}>
+    <>
       <header className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Main Header */}
@@ -52,12 +52,12 @@ const Header = () => {
               >
                 <FaCartPlus size="1.3rem" />
                 <span className="absolute top-0 right-0 bg-blue-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                  {user.cart.length}
+                  {0}
                 </span>
               </Link>
 
               {/* User Account - Desktop */}
-              {user ? (
+              {user !== "" ? (
                 <div>welcome</div>
               ) : (
                 <div className="hidden md:flex items-center space-x-2">
@@ -131,7 +131,7 @@ const Header = () => {
           )}
         </div>
       </header>
-    </IconContext.Provider>
+    </>
   );
 };
 

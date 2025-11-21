@@ -9,5 +9,6 @@ const prudoctSchema = new mongoose.Schema({
   saler: { type: String, required: true },
   quantity: { type: Number, required: true },
   prudoctNo: { type: Number, required: false },
+  saved: { type: Number, required: false, default: 0 },
 });
 export default mongoose.model("Prudoct", prudoctSchema);
