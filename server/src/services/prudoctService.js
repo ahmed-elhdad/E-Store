@@ -2,162 +2,230 @@ import Prudoct from "../models/Prudoct.model.js";
 import User from "../models/User.model.js";
 import { idValidation } from "../middleware/idValidation.js";
 import { CheckExit } from "../middleware/checkExit.js";
+import { getProductImageUrl } from "../config/multer.config.js";
+
 export class PrudoctService {
   static async getPrudoct(data, res) {
-    const { id } = await data;
-    const isValidId = idValidation(id);
-    if (!isValidId) {
-      res.status(301).json({ error: "Valid Id" });
-      return;
+    try {
+      const { id } = data;
+      if (!id) {
+        return res.status(400).json({ error: "Product ID is required" });
+      }
+      const isValidId = idValidation(id);
+      if (!isValidId) {
+        return res.status(400).json({ error: "Valid ID required" });
+      }
+      const exit = await CheckExit.checkPrudoctById(id);
+      if (!exit) {
+        return res.status(404).json({ error: "Product not found" });
+      }
+      // Convert image paths to URLs
+      if (exit.images) {
+        exit.images = exit.images.map((img) => getProductImageUrl(img));
+      }
+      return res.status(200).json({ data: exit });
+    } catch (error) {
+      return res.status(500).json({ error: error.message });
     }
-    const exit = CheckExit.checkPrudoctById(id);
-    if (!exit) {
-      res.status(404).json({ error: "not found prudoct" });
-      return;
-    }
-    res.status(201).json({ data: exit });
   }
   static async getPrudocts(data, res) {
-    const { category } = await data;
-    if (!category) {
-      res.json({ message: "valid category" });
-      return;
+    try {
+      const { category } = data;
+      let prudocts;
+      if (!category) {
+        // If no category provided, return all products
+        prudocts = await Prudoct.find({});
+      } else {
+        prudocts = await CheckExit.checkPrudoctByCategory(category);
+      }
+      // Convert image paths to URLs
+      prudocts = prudocts.map((product) => {
+        if (product.images) {
+          product.images = product.images.map((img) => getProductImageUrl(img));
+        }
+        return product;
+      });
+      return res.status(200).json({ data: prudocts });
+    } catch (error) {
+      return res.status(500).json({ error: error.message });
     }
-    const prudocts = CheckExit.checkPrudoctByCategory(category);
-    res.status(201).json({ data: prudocts });
   }
-  static async createPrudoct(data, res) {
+  static async createPrudoct(req, res) {
     try {
       const {
         title,
         description,
         category,
-        images,
         price,
         saler,
-        prudoctsNum,
+        quantity,
         prudoctNo,
-      } = await data;
+      } = req.body;
+
+      // Handle uploaded files
+      let imagePaths = [];
+      if (req.files && req.files.length > 0) {
+        imagePaths = req.files.map((file) => file.filename);
+      } else if (req.body.images) {
+        // Fallback: if images provided as URLs/strings
+        imagePaths = Array.isArray(req.body.images)
+          ? req.body.images
+          : [req.body.images];
+      }
+
       if (
         !title ||
         !description ||
         !category ||
-        !images ||
-        !price ||
+        imagePaths.length === 0 ||
+        price === undefined ||
         !saler ||
-        !prudoctsNum ||
-        !prudoctNo
+        quantity === undefined
       ) {
-        res.status(301).json({ error: "data required" });
-        return;
+        return res.status(400).json({
+          error:
+            "All required fields must be provided including at least one image",
+        });
       }
-      const prudoctExit = Prudoct.find({ title: title });
-      const salerExit = CheckExit.checkUserByEmail(saler);
+
+      const prudoctExit = await Prudoct.findOne({ title: title });
       if (prudoctExit) {
-        res.status(301).json({ error: "the prudoct exits" });
-        return;
+        return res
+          .status(409)
+          .json({ error: "Product with this title already exists" });
       }
+
+      const salerExit = await CheckExit.checkUserByEmail(saler);
       if (!salerExit) {
-        res.status(301).json({ error: "User not found" });
-        return;
+        return res.status(404).json({ error: "Seller not found" });
       }
+
       if (price <= 0) {
-        res.status(301).json({ error: "Valid Price" });
-        return;
+        return res.status(400).json({ error: "Price must be greater than 0" });
       }
-      if (prudoctsNum <= 0) {
-        res.status(301).json({ error: "Valid prudoctsNum" });
-        return;
+
+      if (quantity <= 0) {
+        return res
+          .status(400)
+          .json({ error: "Quantity must be greater than 0" });
       }
-      const numOfPrudocts = (await Prudoct.find({})).length + 1;
-      const salerName = salerExit.name;
+
       const prudoct = new Prudoct({
         title,
         description,
         category,
-        images,
-        price,
-        salerName,
-        prudoctsNum,
-        numOfPrudocts,
+        images: imagePaths,
+        price: parseFloat(price),
+        saler,
+        quantity: parseInt(quantity),
+        prudoctNo: prudoctNo || undefined,
       });
+
       await prudoct.save();
-      res.status(201).json({ message: "Created successfully" });
+
+      // Convert image paths to URLs in response
+      if (prudoct.images) {
+        prudoct.images = prudoct.images.map((img) => getProductImageUrl(img));
+      }
+
+      return res
+        .status(201)
+        .json({ message: "Product created successfully", data: prudoct });
     } catch (error) {
-      res.json({ error: err });
-      console.log(err);
+      console.error(error);
+      return res.status(500).json({ error: error.message });
     }
   }
-  static async editPrudoct(data, res) {
+  static async editPrudoct(req, res) {
     try {
+      const id = req.params.id || req.body.id;
       const {
-        id,
         title,
         description,
         category,
-        images,
         price,
         saler,
-        prudoctsNum,
+        quantity,
         prudoctNo,
-      } = data;
+      } = req.body;
 
       if (!id) {
-        return res.status(400).json({ error: "id required" });
+        return res.status(400).json({ error: "Product ID is required" });
       }
       if (!idValidation(id)) {
-        return res.status(400).json({ error: "valid id" });
+        return res.status(400).json({ error: "Valid ID required" });
       }
 
-      const prudoct = CheckExit.checkPrudoctById(id);
+      const prudoct = await CheckExit.checkPrudoctById(id);
       if (!prudoct) {
-        return res.status(404).json({ error: "Prudoct not found" });
+        return res.status(404).json({ error: "Product not found" });
       }
 
       if (price !== undefined && price <= 0) {
-        return res.status(400).json({ error: "Valid Price" });
+        return res.status(400).json({ error: "Price must be greater than 0" });
       }
-      if (prudoctsNum !== undefined && prudoctsNum <= 0) {
-        return res.status(400).json({ error: "Valid prudoctsNum" });
+      if (quantity !== undefined && quantity < 0) {
+        return res.status(400).json({ error: "Quantity must be 0 or greater" });
+      }
+
+      // Handle uploaded files
+      if (req.files && req.files.length > 0) {
+        const imagePaths = req.files.map((file) => file.filename);
+        prudoct.images = [...prudoct.images, ...imagePaths];
+      } else if (req.body.images !== undefined) {
+        // If images provided as URLs/strings (replace all)
+        prudoct.images = Array.isArray(req.body.images)
+          ? req.body.images
+          : [req.body.images];
       }
 
       if (saler) {
-        const salerUser = CheckExit.checkUserByEmail(saler);
+        const salerUser = await CheckExit.checkUserByEmail(saler);
         if (!salerUser) {
-          return res.status(404).json({ error: "User not found" });
+          return res.status(404).json({ error: "Seller not found" });
         }
-        prudoct.salerName = salerUser.name;
+        prudoct.saler = salerUser.email;
       }
 
       if (title !== undefined) prudoct.title = title;
       if (description !== undefined) prudoct.description = description;
       if (category !== undefined) prudoct.category = category;
-      if (images !== undefined) prudoct.images = images;
-      if (price !== undefined) prudoct.price = price;
-      if (prudoctsNum !== undefined) prudoct.prudoctsNum = prudoctsNum;
+      if (price !== undefined) prudoct.price = parseFloat(price);
+      if (quantity !== undefined) prudoct.quantity = parseInt(quantity);
       if (prudoctNo !== undefined) prudoct.prudoctNo = prudoctNo;
 
       await prudoct.save();
+
+      // Convert image paths to URLs in response
+      if (prudoct.images) {
+        prudoct.images = prudoct.images.map((img) => getProductImageUrl(img));
+      }
+
       return res
         .status(200)
-        .json({ message: "Updated successfully", data: prudoct });
+        .json({ message: "Product updated successfully", data: prudoct });
     } catch (error) {
       console.error(error);
-      return res.status(500).json({ error: "Server error" });
+      return res.status(500).json({ error: error.message });
     }
   }
   static async removePrudoct(data, res) {
-    const { id } = await data;
-    const isValidId = idValidation(id);
-    if (!isValidId) {
-      res.status(301).json({ error: "valid id" });
-      return;
+    try {
+      const { id } = data;
+      if (!id) {
+        return res.status(400).json({ error: "Product ID is required" });
+      }
+      const isValidId = idValidation(id);
+      if (!isValidId) {
+        return res.status(400).json({ error: "Valid ID required" });
+      }
+      const delPrudoct = await Prudoct.findByIdAndDelete(id);
+      if (!delPrudoct) {
+        return res.status(404).json({ error: "Product not found" });
+      }
+      return res.status(200).json({ message: "Product deleted successfully" });
+    } catch (error) {
+      return res.status(500).json({ error: error.message });
     }
-    const delPrudoct = Prudoct.findOneAndDelete({ _id: id });
-    if (!delPrudoct) {
-      res.status(301).json({ error: "Field to remove" });
-      return;
-    }
-    res.status(201).json({ message: "deleted successfully" });
   }
 }

@@ -13,6 +13,7 @@ dist
 dist-ssr
 *.local
 PROJECT_PLAN.md
+/server/OAUTH_SETUP.md
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

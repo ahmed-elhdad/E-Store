@@ -1,19 +1,21 @@
 import { PrudoctService } from "../services/prudoctService.js";
+
 export const getPrudoct = async (req, res) => {
-  PrudoctService.getPrudoct(req.header, res);
+  await PrudoctService.getPrudoct({ id: req.params.id }, res);
 };
+
 export const getPrudocts = async (req, res) => {
-  PrudoctService.getPrudocts(req.body, res);
+  await PrudoctService.getPrudocts({ category: req.query.category }, res);
 };
 
 export const createPrudoct = async (req, res) => {
-  PrudoctService.createPrudoct(req.body, res);
+  await PrudoctService.createPrudoct(req, res);
 };
 
 export const editPrudoct = async (req, res) => {
-  PrudoctService.editPrudoct(req.body, res);
+  await PrudoctService.editPrudoct(req, res);
 };
 
 export const removePrudoct = async (req, res) => {
-  PrudoctService.removePrudoct(req.body, res);
+  await PrudoctService.removePrudoct({ id: req.body.id || req.params.id }, res);
 };

@@ -20,12 +20,36 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  cart: [],
-  wishList: [],
-  orders: [],
+  cart: [
+    {
+      productId: { type: mongoose.Schema.Types.ObjectId, ref: "Prudoct" },
+      quantity: { type: Number, default: 1 },
+      price: { type: Number, required: true },
+    },
+  ],
+  wishList: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Prudoct",
+    },
+  ],
+  orders: [
+    {
+      items: [
+        {
+          productId: { type: mongoose.Schema.Types.ObjectId, ref: "Prudoct" },
+          quantity: { type: Number, required: true },
+          price: { type: Number, required: true },
+        },
+      ],
+      total_price: { type: Number, required: true },
+      orderDate: { type: Date, default: Date.now },
+      status: { type: String, default: "pending" },
+    },
+  ],
   createdAt: {
     type: Date,
-    default: date.getDay(),
+    default: Date.now,
   },
   role: {
     type: String,

@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import { Link } from "react-router-dom";
 import { IconContext } from "react-icons";
 import { FaBars, FaCartPlus, FaSearch } from "react-icons/fa";
+import { AppContext } from "../contexts/AppContext";
 
 const Header = () => {
+  const { user } = use(AppContext);
   const [search, setSearch] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -50,25 +52,29 @@ const Header = () => {
               >
                 <FaCartPlus size="1.3rem" />
                 <span className="absolute top-0 right-0 bg-blue-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                  0
+                  {user.cart.length}
                 </span>
               </Link>
 
               {/* User Account - Desktop */}
-              <div className="hidden md:flex items-center space-x-2">
-                <Link
-                  to="auth/login"
-                  className="px-4 py-2 text-gray-700 hover:text-blue-600 font-medium transition-colors"
-                >
-                  Log in
-                </Link>
-                <Link
-                  to="auth/register"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors"
-                >
-                  Register
-                </Link>
-              </div>
+              {user ? (
+                <div>welcome</div>
+              ) : (
+                <div className="hidden md:flex items-center space-x-2">
+                  <Link
+                    to="auth/login"
+                    className="px-4 py-2 text-gray-700 hover:text-blue-600 font-medium transition-colors"
+                  >
+                    Log in
+                  </Link>
+                  <Link
+                    to="auth/register"
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors"
+                  >
+                    Register
+                  </Link>
+                </div>
+              )}
 
               {/* Mobile Menu Button */}
               <button
@@ -101,22 +107,26 @@ const Header = () => {
           {/* Mobile Menu */}
           {isMobileMenuOpen && (
             <div className="md:hidden border-t border-gray-200 py-4">
-              <div className="flex flex-col space-y-3">
-                <Link
-                  to="/auth/login"
-                  className="px-4 py-2 text-gray-700 hover:text-blue-600 font-medium transition-colors"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Log in
-                </Link>
-                <Link
-                  to="auth/register"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-center transition-colors"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Register
-                </Link>
-              </div>
+              {user ? (
+                <>jkhjklh</>
+              ) : (
+                <div className="flex flex-col space-y-3">
+                  <Link
+                    to="/auth/login"
+                    className="px-4 py-2 text-gray-700 hover:text-blue-600 font-medium transition-colors"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Log in
+                  </Link>
+                  <Link
+                    to="auth/register"
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-center transition-colors"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Register
+                  </Link>
+                </div>
+              )}
             </div>
           )}
         </div>

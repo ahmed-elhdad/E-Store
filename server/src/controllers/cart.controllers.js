@@ -1,19 +1,21 @@
 import { CartService } from "../services/cartService.js";
-export const getCart = (req, res) => {
-  CartService.getCart(req.body, res);
+
+export const getCart = async (req, res) => {
+  await CartService.getCart(req, res);
 };
-export const createCart = (req, res) => {
-  CartService.createCart(req.body, res);
+
+export const removeCart = async (req, res) => {
+  await CartService.removeCart(req, res);
 };
-export const removeCart = (req, res) => {
-  CartService.removeCart(req.body, res);
+
+export const addPrudoct = async (req, res) => {
+  await CartService.addPrudoct(req, res);
 };
-export const addPrudoct = (req, res) => {
-  CartService.addPrudoct(req.body, res);
+
+export const editPrudoct = async (req, res) => {
+  await CartService.editPrudoct(req, res);
 };
-export const editPrudoct = (req, res) => {
-  CartService.editPrudoct(req.body, res);
-};
-export const removePrudoct = (req, res) => {
-  CartService.removePrudoct(req.body, res);
+
+export const removePrudoct = async (req, res) => {
+  await CartService.removePrudoct(req, res);
 };

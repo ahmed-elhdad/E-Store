@@ -1,179 +1,239 @@
 import User from "../models/User.model.js";
-import Cart from "../models/Cart.model.js";
-import { idValidation } from "../middleware/idValidation.js";
 import Prudoct from "../models/Prudoct.model.js";
+import { idValidation } from "../middleware/idValidation.js";
 import { CheckExit } from "../middleware/checkExit.js";
+
 export class CartService {
-  static async getCart(data, res) {
+  // Get user's cart
+  static async getCart(req, res) {
     try {
-      const { userId } = data;
+      const userId = req.user.id; // From JWT middleware
       const isValidId = idValidation(userId);
       if (!isValidId) {
-        res.status(301).json({ error: "valid Id" });
+        return res.status(400).json({ error: "Invalid user ID" });
       }
-      const existing = CheckExit.checkUserByEmail(email);
-      if (!existing) {
-        res.status(404).json({ error: "not found user" });
-        return;
+
+      const user = await CheckExit.checkUserById(userId);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
       }
-      if (!existing.cart) {
-        res.status(404).json({ error: "The user don't has any cart" });
-        return;
-      }
-      res.status(201).json({ data: existing.cart });
+
+      // Populate product details
+      const cartItems = await Promise.all(
+        user.cart.map(async (item) => {
+          const product = await Prudoct.findById(item.productId);
+          return {
+            productId: item.productId,
+            quantity: item.quantity,
+            price: item.price,
+            product: product || null,
+          };
+        })
+      );
+
+      // Calculate total price
+      const totalPrice = user.cart.reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0
+      );
+
+      return res.status(200).json({
+        data: cartItems,
+        totalPrice: totalPrice,
+        itemCount: user.cart.length,
+      });
     } catch (err) {
-      res.status(301).json({ error: `Error: ${err}` });
+      return res.status(500).json({ error: err.message });
     }
   }
-  static async createCart(data, res) {
+
+  // Add product to cart
+  static async addPrudoct(req, res) {
     try {
-      const { userId, token } = data;
-      // Compelet with JWT verify
-      const isValidId = idValidation(userId);
-      const existing = CheckExit.checkUserById(userId);
-      if (!isValidId) {
-        res.status(301).json({ error: "valid userId" });
-        return;
+      const userId = req.user.id; // From JWT middleware
+      const { productId, quantity } = req.body;
+
+      if (!productId || !quantity || quantity <= 0) {
+        return res
+          .status(400)
+          .json({ error: "Product ID and valid quantity required" });
       }
-      if (!existing) {
-        res.status(404).json({ error: "user not found" });
-        return;
-      }
-      const cart = new Cart();
-      res.status(201).json({ cart, message: "cart created successfully" });
-    } catch (err) {
-      res.status(301).json({ error: `Error: ${err}` });
-    }
-  }
-  static async removeCart(data, res) {
-    try {
-      const { userId, cartId } = data;
+
       const isValidUserId = idValidation(userId);
-      const isValidCartId = idValidation(cartId);
-      if (!isValidCartId || !isValidUserId) {
-        res.status(301).json({ error: "Valid id" });
-        return;
+      const isValidProductId = idValidation(productId);
+
+      if (!isValidUserId || !isValidProductId) {
+        return res.status(400).json({ error: "Invalid user or product ID" });
       }
-      const existingUser = CheckExit.checkUserById(userId);
-      const existingCart = Cart.findOne({ _id: cartId });
-      if (!existingUser || !existingCart) {
-        res.status(404).json({ error: "Not found user or cart" });
-        return;
+
+      const user = await CheckExit.checkUserById(userId);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
       }
-      const delCart = Cart.findOneAndDelete({ _id: cartId });
-      if (!delCart) {
-        res.status(301).json({ error: "feild to remove cart" });
-        return;
+
+      const product = await CheckExit.checkPrudoctById(productId);
+      if (!product) {
+        return res.status(404).json({ error: "Product not found" });
       }
-      res.status(201).json({ message: "removed successfully" });
-    } catch (err) {
-      res.status(301).json({ error: `Error: ${err}` });
-    }
-  }
-  static async addPrudoct(data, res) {
-    try {
-      const { userId, cartId, prudoctId, prudoctQuantity } = data;
-      // Check ID
-      const isValidUserId = idValidation(userId);
-      const isValidCartId = idValidation(cartId);
-      const isValidPrudoctId = idValidation(prudoctId);
-      if (
-        (!isValidUserId || !isValidCartId || !isValidPrudoctId,
-        !prudoctQuantity)
-      ) {
-        res.status(201).json({ error: "valid id" });
-        return;
-      }
-      // Check if data exit
-      const existingUser = CheckExit.checkUserById(userId);
-      const existingCart = existingUser.cart.findOne({ _id: cartId });
-      const existingPrudoct = CheckExit.checkPrudoctById(prudoctId);
-      if (!existingUser || !existingCart || !existingPrudoct) {
-        res.status(404).json({ error: "not found prudoct or cart or user" });
-        return;
-      }
-      if (existingPrudoct.quantity < prudoctQuantity) {
-        res.status(301).json({
-          message: `you order ${prudoctQuantity} but there ${existingPrudoct.quantity}`,
+
+      // Check if product has enough quantity
+      if (product.quantity < quantity) {
+        return res.status(400).json({
+          error: `Insufficient stock. Available: ${product.quantity}, Requested: ${quantity}`,
         });
-        return;
       }
-      (await existingPrudoct.quantity) - prudoctQuantity;
-      await existingCart.cart.push({ prudoctId, prudoctQuantity });
 
-      if (!existingCart.cart.push({ prudoctId, prudoctQuantity })) {
-        res.status(301).json({ error: "Feild to add prudoct" });
-        return;
-      }
-      await existingCart.save();
-      await existingPrudoct.save();
-      await existingUser.save();
-      res.status(201).json({ message: "Prudoct added successfully" });
-    } catch (err) {
-      res.status(301).json({ error: `Error: ${err}` });
-    }
-  }
-  static async editPrudoct(data, res) {
-    try {
-      const { userId, prudoctId, prudoctQuantity } = data;
-      const isValidPrudoctId = idValidation(prudoctId);
-      const isValidUserId = idValidation(userId);
-      if (!prudoctQuantity || !isValidPrudoctId || isValidUserId) {
-        res
-          .status(301)
-          .json({ error: "Prudoct Quantity required or valid prudoct id" });
-        return;
-      }
-      const existing = CheckExit.checkUserById(userId);
-      if (!existing) {
-        res.status(404).json({ error: "Not found user" });
-        return;
-      }
-      const findPrudoct = function () {
-        for (let i = 0; i < existing.cart.length; i++) {
-          if (existing.cart[i]._id === prudoctId) {
-            return i;
-          }
+      // Check if product already in cart
+      const existingItemIndex = user.cart.findIndex(
+        (item) => item.productId.toString() === productId
+      );
+
+      if (existingItemIndex !== -1) {
+        // Update quantity if already in cart
+        const newQuantity = user.cart[existingItemIndex].quantity + quantity;
+        if (product.quantity < newQuantity) {
+          return res.status(400).json({
+            error: `Insufficient stock. Available: ${product.quantity}, Requested: ${newQuantity}`,
+          });
         }
-      };
-      const index = findPrudoct;
-      const currentQuantity = await existing.cart[index].quantity;
-      if (!currentQuantity) {
-        res.status(301).json({ error: "Feild to edit quantity" });
-        return;
+        user.cart[existingItemIndex].quantity = newQuantity;
+      } else {
+        // Add new item to cart
+        user.cart.push({
+          productId: productId,
+          quantity: quantity,
+          price: product.price,
+        });
       }
-      currentQuantity = prudoctQuantity;
-      res.status(201).json({ message: "Prudoct edited successfully" });
+
+      await user.save();
+      return res
+        .status(200)
+        .json({ message: "Product added to cart successfully" });
     } catch (err) {
-      res.status(301).json({ error: `Error: ${err}` });
+      return res.status(500).json({ error: err.message });
     }
   }
-  static async removePrudoct(data, res) {
-    try {
-      const { userId, cartId, prudoctId } = data;
-      const isValidPrudoctId = idValidation(prudoctId);
-      const isValidUserId = idValidation(userId);
-      const isValidCartId = idValidation(cartId);
-      if (!isValidCartId || !isValidPrudoctId || isValidUserId) {
-        res.status(301).json({ error: "Prudoct Id or prudoct id are valid" });
-        return;
-      }
-      const existingUser = CheckExit.checkUserById(userId);
-      const existingPrudoct = CheckExit.checkPrudoctById(prudoctId);
 
-      if (!existingUser || !existingPrudoct) {
-        res.status(404).json({ error: "Not found user or prudoct" });
-        return;
+  // Update product quantity in cart
+  static async editPrudoct(req, res) {
+    try {
+      const userId = req.user.id; // From JWT middleware
+      const { productId, quantity } = req.body;
+
+      if (!productId || quantity === undefined || quantity < 0) {
+        return res
+          .status(400)
+          .json({ error: "Product ID and valid quantity required" });
       }
-      const delPrudoct = await Prudoct.findByIdAndDelete(prudoctId);
-      if (!delPrudoct) {
-        res.status(301).json({ error: "Feild to Remove" });
-        return;
+
+      if (quantity === 0) {
+        // Remove product if quantity is 0
+        return CartService.removePrudoct(req, res);
       }
-      existingUser.cart.save();
-      res.status(201).json({ message: "Removed successfully" });
+
+      const isValidUserId = idValidation(userId);
+      const isValidProductId = idValidation(productId);
+
+      if (!isValidUserId || !isValidProductId) {
+        return res.status(400).json({ error: "Invalid user or product ID" });
+      }
+
+      const user = await CheckExit.checkUserById(userId);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      const product = await CheckExit.checkPrudoctById(productId);
+      if (!product) {
+        return res.status(404).json({ error: "Product not found" });
+      }
+
+      if (product.quantity < quantity) {
+        return res.status(400).json({
+          error: `Insufficient stock. Available: ${product.quantity}, Requested: ${quantity}`,
+        });
+      }
+
+      const itemIndex = user.cart.findIndex(
+        (item) => item.productId.toString() === productId
+      );
+
+      if (itemIndex === -1) {
+        return res.status(404).json({ error: "Product not found in cart" });
+      }
+
+      user.cart[itemIndex].quantity = quantity;
+      await user.save();
+
+      return res.status(200).json({ message: "Cart updated successfully" });
     } catch (err) {
-      res.status(301).json({ error: `Error: ${err}` });
+      return res.status(500).json({ error: err.message });
+    }
+  }
+
+  // Remove product from cart
+  static async removePrudoct(req, res) {
+    try {
+      const userId = req.user.id; // From JWT middleware
+      const { productId } = req.body;
+
+      if (!productId) {
+        return res.status(400).json({ error: "Product ID is required" });
+      }
+
+      const isValidUserId = idValidation(userId);
+      const isValidProductId = idValidation(productId);
+
+      if (!isValidUserId || !isValidProductId) {
+        return res.status(400).json({ error: "Invalid user or product ID" });
+      }
+
+      const user = await CheckExit.checkUserById(userId);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      const itemIndex = user.cart.findIndex(
+        (item) => item.productId.toString() === productId
+      );
+
+      if (itemIndex === -1) {
+        return res.status(404).json({ error: "Product not found in cart" });
+      }
+
+      user.cart.splice(itemIndex, 1);
+      await user.save();
+
+      return res
+        .status(200)
+        .json({ message: "Product removed from cart successfully" });
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  }
+
+  // Clear entire cart (when window closes or user wants to clear)
+  static async removeCart(req, res) {
+    try {
+      const userId = req.user.id; // From JWT middleware
+      const isValidUserId = idValidation(userId);
+
+      if (!isValidUserId) {
+        return res.status(400).json({ error: "Invalid user ID" });
+      }
+
+      const user = await CheckExit.checkUserById(userId);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      user.cart = [];
+      await user.save();
+
+      return res.status(200).json({ message: "Cart cleared successfully" });
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
     }
   }
 }

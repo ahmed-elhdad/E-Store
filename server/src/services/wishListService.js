@@ -1,73 +1,126 @@
 import { idValidation } from "../middleware/idValidation.js";
-import { CheckExit } from "../middleware/CheckExit.js";
+import { CheckExit } from "../middleware/checkExit.js";
+import Prudoct from "../models/Prudoct.model.js";
 
 export class WishListService {
-  static async getWishList(data, res) {
-    const { userId } = data;
-    const isValidId = idValidation(userId);
-    if (!isValidId) {
-      res.status(301).json({ error: "Valid user id" });
-      return;
+  static async getWishList(req, res) {
+    try {
+      const userId = req.user.id; // From JWT middleware
+      const isValidId = idValidation(userId);
+
+      if (!isValidId) {
+        return res.status(400).json({ error: "Invalid user ID" });
+      }
+
+      const user = await CheckExit.checkUserById(userId);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      // Populate product details
+      const wishListItems = await Promise.all(
+        user.wishList.map(async (productId) => {
+          const product = await Prudoct.findById(productId);
+          return product;
+        })
+      );
+
+      // Filter out null products (in case product was deleted)
+      const validProducts = wishListItems.filter((product) => product !== null);
+
+      return res
+        .status(200)
+        .json({ data: validProducts, count: validProducts.length });
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
     }
-    const exiting = CheckExit.checkUserById(userId);
-    if (!exiting) {
-      res.status(404).json({ error: "User Not found" });
-      return;
-    }
-    const wishList = await exiting.wishList;
-    if (!wishList) {
-      res
-        .status(404)
-        .json({ error: "not found a wish list try to create one" });
-      return;
-    }
-    res.status(201).json({ data: wishList });
   }
 
-  static async addPrudoctToWishList(data, res) {
-    const { userId, prudoctId } = data;
-    const isValidUserId = idValidation(userId);
-    const isValidPrudoctId = idValidation(prudoctId);
-    if (!isValidUserId || !isValidPrudoctId) {
-      res.status(301).json({ error: "valid prudoct or user id" });
-      return;
-    }
-    const exitingUser = CheckExit.checkPrudoctById(userId);
-    const exitingPrudoct = exitingUser.wishList.filter(prudoctId);
-    if (!exitingUser || exitingPrudoct) {
-      res.status(404).json({ error: "not found user or found prudoct" });
-      return;
-    }
-    const wishList = exitingUser.wishList;
-    if (!wishList) {
-      res.status(404).json({ error: "Not found wish list" });
-      return;
-    }
-    await wishList.push(prudoctId);
-    await exitingUser.save();
-  }
-  static async removePrudoctFromWishList(data, res) {
-    const { userId, prudoctId } = data;
-    const isValidUserId = idValidation(userId);
-    const isValidPrudoctId = idValidation(prudoctId);
-    if (!isValidUserId || !isValidPrudoctId) {
-      res.status(301).json({ error: "valid user or prudoct id" });
-      return;
-    }
-    const exitingUser = CheckExit.checkUserById(userId);
-    const exitingPrudoct = exitingUser.wishList.filter(prudoctId);
-    if (!exitingUser || !exitingPrudoct) {
-      res.status(301).json({ error: "not found user or prudoct" });
-      return;
-    }
-    const findPrudoct = function () {
-      for (let i = 0; i < exitingUser.wishList.length; i++) {
-        if (i == prudoctId) {
-          return i;
-        }
+  static async addPrudoctToWishList(req, res) {
+    try {
+      const userId = req.user.id; // From JWT middleware
+      const { productId } = req.body;
+
+      if (!productId) {
+        return res.status(400).json({ error: "Product ID is required" });
       }
-    };
-    await exitingUser.wishList[findPrudoct].remove();
-    res.status(201).json({ error: "Prudoct removes successfully." });
+
+      const isValidUserId = idValidation(userId);
+      const isValidProductId = idValidation(productId);
+
+      if (!isValidUserId || !isValidProductId) {
+        return res.status(400).json({ error: "Invalid user or product ID" });
+      }
+
+      const user = await CheckExit.checkUserById(userId);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      const product = await CheckExit.checkPrudoctById(productId);
+      if (!product) {
+        return res.status(404).json({ error: "Product not found" });
+      }
+
+      // Check if product is already in wishlist
+      const isInWishList = user.wishList.some(
+        (id) => id.toString() === productId
+      );
+
+      if (isInWishList) {
+        return res.status(409).json({ error: "Product already in wishlist" });
+      }
+
+      // Add product to wishlist
+      user.wishList.push(productId);
+      await user.save();
+
+      return res
+        .status(200)
+        .json({ message: "Product added to wishlist successfully" });
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  }
+
+  static async removePrudoctFromWishList(req, res) {
+    try {
+      const userId = req.user.id; // From JWT middleware
+      const { productId } = req.body;
+
+      if (!productId) {
+        return res.status(400).json({ error: "Product ID is required" });
+      }
+
+      const isValidUserId = idValidation(userId);
+      const isValidProductId = idValidation(productId);
+
+      if (!isValidUserId || !isValidProductId) {
+        return res.status(400).json({ error: "Invalid user or product ID" });
+      }
+
+      const user = await CheckExit.checkUserById(userId);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      // Find and remove product from wishlist
+      const productIndex = user.wishList.findIndex(
+        (id) => id.toString() === productId
+      );
+
+      if (productIndex === -1) {
+        return res.status(404).json({ error: "Product not found in wishlist" });
+      }
+
+      user.wishList.splice(productIndex, 1);
+      await user.save();
+
+      return res
+        .status(200)
+        .json({ message: "Product removed from wishlist successfully" });
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
   }
 }
