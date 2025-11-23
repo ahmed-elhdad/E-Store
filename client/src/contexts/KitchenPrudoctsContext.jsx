@@ -1,7 +1,7 @@
 import React, { createContext, useMemo, useState } from "react";
 import { usePrudoctList } from "../api/hooks/usePrudoct";
-export const TechPrudoctsContext = createContext();
-const TechPrudoctsContextProvider = ({ children }) => {
+export const KitchenPrudoctsContext = createContext();
+const KitchenPrudoctsContextProvider = ({ children }) => {
   const [prdcts, setPrudocts] = useState([
     {
       title: "fafsdfd",
@@ -18,7 +18,7 @@ const TechPrudoctsContextProvider = ({ children }) => {
     refetch,
     error,
   } = usePrudoctList(
-    { category: "tech" },
+    { category: "kitchen" },
     {
       placeholderData,
     }
@@ -32,10 +32,10 @@ const TechPrudoctsContextProvider = ({ children }) => {
   };
 
   return (
-    <TechPrudoctsContext.Provider value={value}>
+    <KitchenPrudoctsContext.Provider value={value}>
       {children}
-    </TechPrudoctsContext.Provider>
+    </KitchenPrudoctsContext.Provider>
   );
 };
 
-export default TechPrudoctsContextProvider;
+export default KitchenPrudoctsContextProvider;

@@ -14,7 +14,6 @@ const TechContent = ({ techCategories }) => {
     <div>
       <Header />
       <main className="px-4 sm:px-6 lg:px-8">
-        <h1 className="text-2xl font-bold capitalize mb-4">Categories:</h1>
         <CategoriesSection data={techCategories} />
         <div className="mt-6 flex flex-col gap-6 lg:flex-row">
           <div className="lg:w-64 lg:shrink-0">

@@ -1,13 +1,14 @@
-import { useState } from "react";
+import { use, useState } from "react";
 import { AppContext } from "../contexts/AppContext";
 
-const Filter = () => {
+const Filter = (props) => {
   const [searchFilter, setSearchFilter] = useState({
-    price: 0,
-    payment: "online",
+    price: props.price,
+    payment: props.payment,
   });
+
   return (
-    <div className="w-3xs md:hidden sm:hidden">
+    <div className="w-3xs min-h-screen p-2 sm:hidden md:flex flex-col">
       <div className="flex flex-col gap-2" id="price">
         <h3 className="font-medium capitalize">price</h3>
         <ul aria-label="price">
@@ -19,7 +20,7 @@ const Filter = () => {
               });
             }}
           >
-            20 ~ 60
+            <input type="checkbox" /> 20 ~ 60
           </li>
           <li
             className="cursor-pointer font-medium hover:bg-white/5"
@@ -29,7 +30,7 @@ const Filter = () => {
               });
             }}
           >
-            60 ~ 80
+            <input type="checkbox" /> 60 ~ 80
           </li>
           <li
             className="cursor-pointer font-medium hover:bg-white/5"
@@ -39,7 +40,7 @@ const Filter = () => {
               });
             }}
           >
-            80 ~ 100
+            <input type="checkbox" /> 80 ~ 100
           </li>
           <li
             className="cursor-pointer font-medium hover:bg-white/5"
@@ -49,7 +50,7 @@ const Filter = () => {
               });
             }}
           >
-            100 ~ 200
+            <input type="checkbox" /> 100 ~ 200
           </li>
         </ul>
       </div>
@@ -64,7 +65,7 @@ const Filter = () => {
               });
             }}
           >
-            with receive
+            <input type="checkbox" /> with receive
           </li>
           <li
             className="cursor-pointer font-medium hover:bg-white/5"
@@ -75,7 +76,7 @@ const Filter = () => {
               });
             }}
           >
-            online
+            <input type="checkbox" /> online
           </li>
         </ul>
       </div>

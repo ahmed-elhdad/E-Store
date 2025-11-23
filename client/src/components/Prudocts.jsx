@@ -7,20 +7,38 @@ const Prudocts = ({
   title = "Products",
   subtitle,
   isLoading,
+  filter,
   emptyMessage = "No products available right now.",
   className = "",
   gridClassName = "grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4",
   showActions = true,
 }) => {
+  const handleAddToCart = () => {
+    // Plane
+  };
   const context = useContext(TechPrudoctsContext);
   const contextPrudocts = context?.prudocts;
   const contextIsLoaded = context?.isLoaded;
 
-  const resolvedItems = useMemo(
+  let resolvedItems = useMemo(
     () => items ?? contextPrudocts ?? [],
     [items, contextPrudocts]
   );
-
+  const mainItems = resolvedItems;
+  if (filter) {
+    for (let i = 0; i < resolvedItems.length; i++) {
+      if (resolvedItems[i].payment == filter.payment) {
+        const filterdItems = resolvedItems.filter({ payment: filter.payment });
+        resolvedItems = filterdItems;
+      }
+      if (resolvedItems[i].price == filter.price) {
+        const filterdItems = resolvedItems.filter({ price: filter.price });
+        resolvedItems = filterdItems;
+      } else {
+        resolvedItems = mainItems;
+      }
+    }
+  }
   const resolvedLoading =
     typeof isLoading === "boolean"
       ? isLoading
@@ -59,6 +77,7 @@ const Prudocts = ({
             key={prudoct?.id ?? `${prudoct?.name}-${index}`}
             prudoct={prudoct}
             showActions={showActions}
+            onAddToCart={handleAddToCart}
           />
         ))}
       </div>
