@@ -1,105 +1,48 @@
-import React, { useContext, useMemo, useState } from "react";
-import { TechPrudoctsContext } from "../contexts/TechPrudoctsContext";
-import Laoding from "./Laoding";
-import PrudoctCard from "./PrudoctCard";
+import { use, useEffect, useState } from "react";
+
 import axios from "axios";
-const Prudocts = ({
-  items,
-  title = "Products",
-  subtitle,
-  isLoading,
-  filter,
-  emptyMessage = "No products available right now.",
-  className = "",
-  gridClassName = "grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4",
-  showActions = true,
-}) => {
-  const [error, setError] = useState(""),
-    [showCounter, setShowCounter] = useState(false);
-  const handleAddToCart = () => {
-    setShowCounter(true);
-    const BASE_URL = import.meta.VITE_BASE_URL;
-    const res = axios.post(`${BASE_URL}/cart/add`);
-    if (!res || res.status >= 300) {
-      setError("try again");
-      setShowCounter(false);
-      return;
-    }
-    return (
-      <>
-        <h3>added successfully</h3>
-      </>
-    );
-  };
-  const context = useContext(TechPrudoctsContext);
-  const contextPrudocts = context?.prudocts;
-  const contextIsLoaded = context?.isLoaded;
+import { instance } from "../api/axiosInstant";
+import usePrudoctList from "../api/hooks/usePrudoct";
+import Loading from "./Loading";
+const Prudocts = ({ category }) => {
+  const [showCounter, setShowCounter] = useState(true),
+    // { id, name = "", description, price, img, badge, isFavorite } = prudoct,
+    [counter, setCounter] = useState(0),
+    [items, setItems] = useState([]);
+  const {
+    data,
 
-  let resolvedItems = useMemo(
-    () => items ?? contextPrudocts ?? [],
-    [items, contextPrudocts]
-  );
-  const mainItems = resolvedItems;
-  if (filter) {
-    for (let i = 0; i < resolvedItems.length; i++) {
-      if (resolvedItems[i].payment == filter.payment) {
-        const filterdItems = resolvedItems.filter({ payment: filter.payment });
-        resolvedItems = filterdItems;
-      }
-      if (resolvedItems[i].price == filter.price) {
-        const filterdItems = resolvedItems.filter({ price: filter.price });
-        resolvedItems = filterdItems;
-      } else {
-        resolvedItems = mainItems;
-      }
-    }
-  }
-  const resolvedLoading =
-    typeof isLoading === "boolean"
-      ? isLoading
-      : Boolean(context) && !contextIsLoaded;
+    isError,
+    isFetched,
 
-  if (resolvedLoading) {
-    return (
-      <div className="flex flex-1 items-center justify-center py-12">
-        <Laoding />
-      </div>
-    );
-  }
+    isLoading,
 
-  if (!resolvedItems?.length) {
-    return (
-      <div className="flex flex-1 items-center justify-center py-12">
-        <p className="text-center text-sm text-gray-500">{emptyMessage}</p>
-      </div>
-    );
-  }
+    isSuccess,
 
-  return (
-    <section className={`flex-1 ${className}`}>
-      {(title || subtitle) && (
-        <header className="mb-6">
-          {title && (
-            <h2 className="text-2xl font-semibold text-gray-900">{title}</h2>
-          )}
-          {subtitle && <p className="mt-1 text-sm text-gray-500">{subtitle}</p>}
-        </header>
-      )}
+    refetch,
+    status,
+  } = usePrudoctList;
+  console.log(isSuccess);
+  console.log(isError);
 
-      <div className={gridClassName}>
-        {resolvedItems.map((prudoct, index) => (
-          <PrudoctCard
-            key={prudoct?.id ?? `${prudoct?.name}-${index}`}
-            prudoct={prudoct}
-            showCounter={showCounter}
-            showActions={showActions}
-            setShowCounter={setShowCounter}
-            onAddToCart={handleAddToCart}
-          />
-        ))}
-      </div>
-    </section>
-  );
+  return <div>{data}</div>;
+  // return (
+  //   <>
+  //     <div>
+  //       {isLoading ? (
+  //         <Loading />
+  //       ) : (
+  //         <div>
+  //           {data.data.map((item) => {
+  //             <div>{item.title}</div>;
+  //           })}
+  //         </div>
+  //       )}
+  //     </div>
+  //   </>
+  // );
 };
 
 export default Prudocts;
+
+// Finish project, the cart desgin make it fll screen in mobile and the mobile size in the lg screen, make all logic i make it for add prudoct to cart and when the user click finish from the cart you should check if all data you send to server like the data in cart if no edit the quantity by the endpoint i am created in server to edit prudoct from cart, the item in cart is have a prudoctId you will get the prudocts from server and search in those about this prudoctId in the list

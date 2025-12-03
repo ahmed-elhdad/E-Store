@@ -5,7 +5,7 @@ const CategoriesSection = (props) => {
   return (
     <div className="cursor-pointer overflow-x-scroll px-4 flex items-center gap-5 justify-center">
       {props.data.map((category, index) => (
-        <Link to={`${category.name}`}>
+        <Link key={index} to={`${category.name}`}>
           <div
             key={index}
             className="flex flex-col gap-3 items-center justify-center"

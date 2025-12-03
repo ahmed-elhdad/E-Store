@@ -4,6 +4,7 @@ import { IconContext } from "react-icons";
 import { FaBars, FaCartPlus, FaSearch } from "react-icons/fa";
 import { AppContext } from "../contexts/AppContext";
 import Cart from "./Cart";
+import PrimaryButton from "./ui/PrimaryButton";
 
 const Header = () => {
   const { user } = use(AppContext);
@@ -64,7 +65,7 @@ const Header = () => {
               </button>
 
               {/* User Account - Desktop */}
-              {user !== "" ? (
+              {user !== null ? (
                 <div>welcome</div>
               ) : (
                 <div className="hidden md:flex items-center space-x-2">
@@ -74,11 +75,8 @@ const Header = () => {
                   >
                     Log in
                   </Link>
-                  <Link
-                    to="auth/register"
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors"
-                  >
-                    Register
+                  <Link to="auth/register">
+                    <PrimaryButton text={"register"} />
                   </Link>
                 </div>
               )}

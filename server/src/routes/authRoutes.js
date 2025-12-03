@@ -22,7 +22,7 @@ import { uploadUserPhoto } from "../config/multer.config.js";
 
 /**
  * @swagger
- * /api/v1/auth/register:
+ * /api/v1/auth/new:
  *   post:
  *     summary: Register a new user
  *     tags: [Auth]
@@ -75,7 +75,7 @@ import { uploadUserPhoto } from "../config/multer.config.js";
  *       409:
  *         description: User already exists
  */
-router.post("/register", uploadUserPhoto, register);
+router.post("/new", uploadUserPhoto, register);
 
 /**
  * @swagger
@@ -234,7 +234,7 @@ router.put("/photo", verifyToken, uploadUserPhoto, updatePhoto);
  *       404:
  *         description: User not found
  */
-router.delete("/delUser", verifyToken, delUser);
+router.delete("/remove", verifyToken, delUser);
 
 /**
  * @swagger

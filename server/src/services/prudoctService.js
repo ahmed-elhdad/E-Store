@@ -23,6 +23,8 @@ export class PrudoctService {
       if (exit.images) {
         exit.images = exit.images.map((img) => getProductImageUrl(img));
       }
+      console.log("prudocts get successfully");
+
       return res.status(200).json({ data: exit });
     } catch (error) {
       return res.status(500).json({ error: error.message });
@@ -45,12 +47,98 @@ export class PrudoctService {
         }
         return product;
       });
-      return res.status(200).json({ data: prudocts });
+      console.log("prudocts get successfully");
+
+      return res.status(200).json({ prudocts });
     } catch (error) {
       return res.status(500).json({ error: error.message });
     }
   }
   static async createPrudoct(req, res) {
+    // try {
+    //   const {
+    //     title,
+    //     description,
+    //     category,
+    //     price,
+    //     saler,
+    //     quantity,
+    //     prudoctNo,
+    //   } = req.body;
+
+    //   // Handle uploaded files
+    //   let imagePaths = [];
+    //   if (req.files && req.files.length > 0) {
+    //     imagePaths = req.files.map((file) => file.filename);
+    //   } else if (req.body.images) {
+
+    //     imagePaths = Array.isArray(req.body.images)
+    //       ? req.body.images
+    //       : [req.body.images];
+    //   }
+
+    //   if (
+    //     !title ||
+    //     !description ||
+    //     !category ||
+    //     imagePaths.length === 0 ||
+    //     price === undefined ||
+    //     !saler ||
+    //     quantity === undefined
+    //   ) {
+    //     return res.status(400).json({
+    //       error:
+    //         "All required fields must be provided including at least one image",
+    //     });
+    //   }
+
+    //   const prudoctExit = await Prudoct.findOne({ title: title });
+    //   if (prudoctExit) {
+    //     return res
+    //       .status(409)
+    //       .json({ error: "Product with this title already exists" });
+    //   }
+
+    //   const salerExit = await CheckExit.checkUserByEmail(saler);
+    //   if (!salerExit) {
+    //     return res.status(404).json({ error: "Seller not found" });
+    //   }
+
+    //   if (price <= 0) {
+    //     return res.status(400).json({ error: "Price must be greater than 0" });
+    //   }
+
+    //   if (quantity <= 0) {
+    //     return res
+    //       .status(400)
+    //       .json({ error: "Quantity must be greater than 0" });
+    //   }
+
+    //   const prudoct = new Prudoct({
+    //     title,
+    //     description,
+    //     category,
+    //     images: imagePaths,
+    //     price: parseFloat(price),
+    //     saler,
+    //     quantity: parseInt(quantity),
+    //     prudoctNo: prudoctNo || undefined,
+    //   });
+
+    //   await prudoct.save();
+
+    //   // Convert image paths to URLs in response
+    //   if (prudoct.images) {
+    //     prudoct.images = prudoct.images.map((img) => getProductImageUrl(img));
+    //   }
+
+    //   return res
+    //     .status(201)
+    //     .json({ message: "Product created successfully", data: prudoct });
+    // } catch (error) {
+    //   console.error(error);
+    //   return res.status(500).json({ error: error.message });
+    // }
     try {
       const {
         title,
@@ -60,46 +148,47 @@ export class PrudoctService {
         saler,
         quantity,
         prudoctNo,
-      } = req.body;
+      } = await req.body;
 
-      // Handle uploaded files
-      let imagePaths = [];
-      if (req.files && req.files.length > 0) {
-        imagePaths = req.files.map((file) => file.filename);
-      } else if (req.body.images) {
-        // Fallback: if images provided as URLs/strings
-        imagePaths = Array.isArray(req.body.images)
-          ? req.body.images
-          : [req.body.images];
+      // Handle uploaded files (Multer)
+      if (!req.files) {
+        return res.status(400).json({
+          error: "At least one image must be uploaded",
+          files: req.files,
+        });
       }
 
+      const imagePaths = req.files.map((file) => file.filename);
+
+      // Validate required fields
       if (
         !title ||
         !description ||
         !category ||
-        imagePaths.length === 0 ||
         price === undefined ||
         !saler ||
         quantity === undefined
       ) {
         return res.status(400).json({
-          error:
-            "All required fields must be provided including at least one image",
+          error: "All required fields must be provided",
         });
       }
 
-      const prudoctExit = await Prudoct.findOne({ title: title });
+      // Check if product already exists
+      const prudoctExit = await Prudoct.findOne({ title });
       if (prudoctExit) {
         return res
           .status(409)
           .json({ error: "Product with this title already exists" });
       }
 
+      // Check if seller exists
       const salerExit = await CheckExit.checkUserByEmail(saler);
       if (!salerExit) {
         return res.status(404).json({ error: "Seller not found" });
       }
 
+      // Validate price and quantity
       if (price <= 0) {
         return res.status(400).json({ error: "Price must be greater than 0" });
       }
@@ -110,6 +199,7 @@ export class PrudoctService {
           .json({ error: "Quantity must be greater than 0" });
       }
 
+      // Create and save product
       const prudoct = new Prudoct({
         title,
         description,
@@ -124,9 +214,7 @@ export class PrudoctService {
       await prudoct.save();
 
       // Convert image paths to URLs in response
-      if (prudoct.images) {
-        prudoct.images = prudoct.images.map((img) => getProductImageUrl(img));
-      }
+      prudoct.images = prudoct.images.map((img) => getProductImageUrl(img));
 
       return res
         .status(201)

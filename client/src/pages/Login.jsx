@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import PrimaryButton from "../components/ui/PrimaryButton";
+import { instance } from "../api/axiosInstant";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -34,8 +36,8 @@ const Login = () => {
 
     setLoading(true);
     try {
-      const response = await fetch(`${BASE_URL}/api/v1/auth/login`, {
-        method: "POST",
+      const response = await instance.post(`${BASE_URL}/api/v1/auth/login`, {
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
@@ -78,7 +80,6 @@ const Login = () => {
       setLoading(false);
     }
   };
-
   const togglePasswordVisibility = () => {
     setInputType(inputType === "password" ? "text" : "password");
   };
@@ -188,13 +189,7 @@ const Login = () => {
                 </a>
               </div>
               {/* Login Button */}
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full cursor-pointer bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold py-2 sm:py-3 rounded-lg transition duration-200 ease-in-out transform hover:scale-105 active:scale-95"
-              >
-                {loading ? "Logging in..." : "Log In"}
-              </button>
+              <PrimaryButton type="submit" loading={loading} text="login" />
             </form>
 
             {/* Divider */}

@@ -9,9 +9,9 @@ import authRoutes from "./src/routes/authRoutes.js";
 import cartRoutes from "./src/routes/cardRoutes.js";
 import ordersRoutes from "./src/routes/ordersRoutes.js";
 import WishListRoutes from "./src/routes/wishListRoutes.js";
+import compression from "compression";
 import connectDB from "./src/config/db.js";
 import { swaggerSpec, swaggerUi } from "./src/config/swagger.config.js";
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -20,7 +20,10 @@ connectDB();
 
 const app = express();
 
-// Middleware - order matters!
+// Serve static files (uploaded images)
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+app.use(compression());
 app.use(
   cors({
     origin: process.env.CLIENT_URL || "http://localhost:5173",
@@ -30,10 +33,6 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-
-// Serve static files (uploaded images)
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-
 // Swagger API Documentation
 app.use(
   "/api-docs",

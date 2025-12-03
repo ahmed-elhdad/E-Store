@@ -2,6 +2,7 @@
   "name": "backend",
   "version": "1.0.0",
   "main": "server.js",
+  "type": "module",
   "scripts": {
     "dev": "nodemon server.js",
     "build": "build server.js",
@@ -9,11 +10,12 @@
     "test": "jest --runInBand"
   },
   "keywords": [],
-  "author": "Ahmed mohamed",
+  "author": "Ahmed mohamed El-Haddad",
   "license": "ISC",
   "description": "",
   "dependencies": {
     "bcryptjs": "^3.0.2",
+    "compression": "^1.8.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",

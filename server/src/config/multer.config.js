@@ -17,6 +17,26 @@ const usersDir = path.join(uploadsDir, "users");
   }
 });
 
+// Set storage
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/"); // make sure this folder exists
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  },
+});
+
+// Filter for images only
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith("image/")) {
+    cb(null, true);
+  } else {
+    cb(new Error("Only image files are allowed"), false);
+  }
+};
+
+export const upload = multer({ storage, fileFilter });
 // Storage configuration for product images
 const productStorage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -64,7 +84,7 @@ const imageFilter = (req, file, cb) => {
 export const uploadProductImages = multer({
   storage: productStorage,
   limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB per file
+    
   },
   fileFilter: imageFilter,
 }).array("images", 10); // Allow up to 10 images
