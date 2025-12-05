@@ -1,26 +1,48 @@
+import mongoose from "mongoose";
 import { CheckExit } from "../middleware/checkExit";
 import { idValidation } from "../middleware/idValidation";
 
 export class ReviewsService {
   static async getReview(data, res) {
-    const { prudoctId, reviewId } = data;
-    const isValidId = idValidation(prudoctId);
-    if (!isValidId) {
-      return res.status(301).json({ error: "Valid ID required" });
-    }
-    const checkExitPrudoct = CheckExit.checkPrudoctById(prudoctId);
+    try {
+      const { prudoctId, reviewId } = data;
+      const isValidId = idValidation(prudoctId);
+      if (!isValidId) {
+        return res.status(301).json({ error: "Valid ID required" });
+      }
+      const checkExitPrudoct = CheckExit.checkPrudoctById(prudoctId);
 
-    if (!checkExitPrudoct) {
-      return res.status(404).json({ error: "prudcot not found" });
+      if (!checkExitPrudoct) {
+        return res.status(404).json({ error: "prudcot not found" });
+      }
+      const checkExitReview = checkExitPrudoct.reviews.find({ id: reviewId });
+      if (!checkExitReview) {
+        return res.status(404).json({ error: "review not found" });
+      }
+      res.status(201).json({ data: checkExitReview });
+    } catch (error) {
+      res.status(501).json({ error: err });
     }
-    const checkExitReview = checkExitPrudoct.reviews.find({ id: reviewId });
-    if (!checkExitReview) {
-      return res.status(404).json({ error: "review not found" });
-    }
-    res.status(201).json({ data: checkExitReview });
   }
   static async addReview(data, res) {
-    
+    const { prudoctId, userId, text } = data;
+    const isValidUserId = idValidation(userId),
+      isValidPrudoctId = idValidation(prudoctId),
+      existingUser = CheckExit.checkUserById(userId),
+      existingPrudoct = CheckExit.checkPrudoctById(prudoctId);
+    if (!isValidUserId || !isValidPrudoctId || !text || text == "")
+      return res
+        .status(301)
+        .json({ error: "user Id , prudoct Id text are required" });
+    if (!existingUser || !existingPrudoct)
+      return res.status(404).json({ error: "user or prudcot not found" });
+    const review = {
+      id: mongoose.Types.ObjectId.createFromTime(Date.now()),
+      userId: userId,
+      text: text,
+    };
+    await existingPrudoct.reviews.push(review);
+    res.status(201).json({ messsage: "Add successfully" });
   }
   static async editReview(data, res) {}
   static async removeReview(data, res) {}
