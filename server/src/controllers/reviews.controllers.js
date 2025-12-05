@@ -1,4 +1,4 @@
-import { ReviewsService } from "../services/reviewsService";
+import { ReviewsService } from "../services/reviewsService.js";
 
 export const get = async (req, res) => {
   await ReviewsService.getReview(req.body, res);

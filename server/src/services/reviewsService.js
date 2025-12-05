@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import { CheckExit } from "../middleware/checkExit";
-import { idValidation } from "../middleware/idValidation";
+import { CheckExit } from "../middleware/checkExit.js";
+import { idValidation } from "../middleware/idValidation.js";
 
 export class ReviewsService {
   static async getReview(data, res) {
@@ -50,24 +50,58 @@ export class ReviewsService {
     }
   }
   static async editReview(data, res) {
-    const { userId, reviewId, text } = data;
+    const { userId, prudoctId, reviewId, text } = data;
     const isValidUserId = idValidation(userId),
       isValidReviewId = idValidation(reviewId),
+      isValidPrudoctId = idValidation(reviewId),
       existingUser = CheckExit.checkUserById(userId),
-      existingReview = existingUser.reviews.find({ id: reviewId });
+      existingPrudoct = CheckExit.checkPrudoctById(prudoctId),
+      existingReview = existingPrudoct.reviews.find({ id: reviewId });
     if (
       !isValidUserId ||
       !isValidReviewId ||
       !existingUser ||
+      !isValidPrudoctId ||
       !existingReview ||
       text == ""
     )
       return res.status(301).json({
         error: "user id , review id required or user or reveiw not exit",
       });
+    if (userId != existingReview.userId)
+      return res.status(301).json({ error: "you cann't edit this review" });
     existingReview.text = text;
     await existingReview.save();
-    res.status(201).json({message:"review edited successfully"})
+    res.status(201).json({ message: "review edited successfully" });
   }
-  static async removeReview(data, res) {}
+  static async removeReview(data, res) {
+    try {
+      const { userId, prudoctId, reviewId } = data;
+      const isValidUserId = idValidation(userId),
+        isValidReviewId = idValidation(reviewId),
+        isValidPrudoctId = idValidation(reviewId),
+        existingUser = CheckExit.checkUserById(userId),
+        existingPrudoct = CheckExit.checkPrudoctById(prudoctId),
+        existingReview = existingPrudoct.reviews.find({ id: reviewId });
+      if (
+        !isValidUserId ||
+        !isValidReviewId ||
+        !isValidPrudoctId ||
+        !existingPrudoct ||
+        !existingUser ||
+        !existingReview
+      )
+        return res.status(301).json({
+          error: "user id , review id required or user or reveiw not exit",
+        });
+      if (userId != existingReview) {
+        return res.status(301).json({ error: "you cann't edit this review" });
+      }
+      await existingPrudoct.reviews.findOneAndDelete({ id: reviewId });
+      await existingPrudoct.save();
+      res.status(201).json({ message: "removed successfully" });
+    } catch (err) {
+      res.status(501).json({ error: err });
+    }
+  }
 }

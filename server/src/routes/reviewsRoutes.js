@@ -1,5 +1,5 @@
 import Router from "express";
-import { add, edit, get, remove } from "../controllers/reviews.controllers";
+import { add, edit, get, remove } from "../controllers/reviews.controllers.js";
 const router = Router();
 /**
  * @swagger

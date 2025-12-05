@@ -1,15 +1,19 @@
+// Libs
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import path from "path";
 import { fileURLToPath } from "url";
+import compression from "compression";
+// Routes
+import reviewsroutes from "./src/routes/reviewsRoutes.js";
 import prudoctsRoutes from "./src/routes/prudoctsRoutes.js";
 import authRoutes from "./src/routes/authRoutes.js";
 import cartRoutes from "./src/routes/cardRoutes.js";
 import ordersRoutes from "./src/routes/ordersRoutes.js";
 import WishListRoutes from "./src/routes/wishListRoutes.js";
-import compression from "compression";
+// Config
 import connectDB from "./src/config/db.js";
 import { swaggerSpec, swaggerUi } from "./src/config/swagger.config.js";
 const __filename = fileURLToPath(import.meta.url);
@@ -49,7 +53,7 @@ app.use("/api/v1/prudocts", prudoctsRoutes);
 app.use("/api/v1/carts", cartRoutes);
 app.use("/api/v1/orders", ordersRoutes);
 app.use("/api/v1/wishList", WishListRoutes);
-
+app.use("/api/v1/reviews", reviewsroutes);
 app.get("/", (req, res) => {
   res.send("Welcome from backend");
 });
