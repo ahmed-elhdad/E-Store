@@ -38,7 +38,7 @@ router.get("/reviews/:id", get);
  *       201:
  *         description: success
  */
-router.post("/add", add);
+router.post("/new", add);
 router.put("/edit/:id", edit);
 router.delete("/remove/:id", remove);
 export default router;

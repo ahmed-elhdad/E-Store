@@ -25,25 +25,49 @@ export class ReviewsService {
     }
   }
   static async addReview(data, res) {
-    const { prudoctId, userId, text } = data;
-    const isValidUserId = idValidation(userId),
-      isValidPrudoctId = idValidation(prudoctId),
-      existingUser = CheckExit.checkUserById(userId),
-      existingPrudoct = CheckExit.checkPrudoctById(prudoctId);
-    if (!isValidUserId || !isValidPrudoctId || !text || text == "")
-      return res
-        .status(301)
-        .json({ error: "user Id , prudoct Id text are required" });
-    if (!existingUser || !existingPrudoct)
-      return res.status(404).json({ error: "user or prudcot not found" });
-    const review = {
-      id: mongoose.Types.ObjectId.createFromTime(Date.now()),
-      userId: userId,
-      text: text,
-    };
-    await existingPrudoct.reviews.push(review);
-    res.status(201).json({ messsage: "Add successfully" });
+    try {
+      const { prudoctId, userId, text } = data;
+      const isValidUserId = idValidation(userId),
+        isValidPrudoctId = idValidation(prudoctId),
+        existingUser = CheckExit.checkUserById(userId),
+        existingPrudoct = CheckExit.checkPrudoctById(prudoctId);
+      if (!isValidUserId || !isValidPrudoctId || !text || text == "")
+        return res
+          .status(301)
+          .json({ error: "user Id , prudoct Id text are required" });
+      if (!existingUser || !existingPrudoct)
+        return res.status(404).json({ error: "user or prudcot not found" });
+      const review = {
+        id: mongoose.Types.ObjectId.createFromTime(Date.now()),
+        userId: userId,
+        text: text,
+      };
+      await existingPrudoct.reviews.push(review);
+      await existingPrudoct.save();
+      res.status(201).json({ messsage: "Add successfully" });
+    } catch (error) {
+      res.status(501).json({ error: err });
+    }
   }
-  static async editReview(data, res) {}
+  static async editReview(data, res) {
+    const { userId, reviewId, text } = data;
+    const isValidUserId = idValidation(userId),
+      isValidReviewId = idValidation(reviewId),
+      existingUser = CheckExit.checkUserById(userId),
+      existingReview = existingUser.reviews.find({ id: reviewId });
+    if (
+      !isValidUserId ||
+      !isValidReviewId ||
+      !existingUser ||
+      !existingReview ||
+      text == ""
+    )
+      return res.status(301).json({
+        error: "user id , review id required or user or reveiw not exit",
+      });
+    existingReview.text = text;
+    await existingReview.save();
+    res.status(201).json({message:"review edited successfully"})
+  }
   static async removeReview(data, res) {}
 }
