@@ -1,5 +1,5 @@
 import React, { createContext, useMemo, useState } from "react";
-import { usePrudoctList } from "../api/hooks/usePrudoct";
+import { usePrudoctList } from "../api/hooks/usePrudocts";
 export const HomesPrudoctsContext = createContext();
 const HomesPrudoctsContextProvider = ({ children }) => {
   const [prdcts, setPrudocts] = useState([

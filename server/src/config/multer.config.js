@@ -121,7 +121,7 @@ export const getFileUrl = (filePath) => {
 export const getProductImageUrl = (filename) => {
   if (!filename) return null;
   if (filename.startsWith("http")) return filename;
-  return `/uploads/products/${filename}`;
+  return `/server/uploads/products/${filename}`;
 };
 
 // Helper function to get user photo URL

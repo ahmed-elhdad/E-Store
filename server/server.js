@@ -25,7 +25,7 @@ connectDB();
 const app = express();
 
 // Serve static files (uploaded images)
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use("/server/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use(compression());
 app.use(

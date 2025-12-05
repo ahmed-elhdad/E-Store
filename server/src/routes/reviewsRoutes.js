@@ -7,7 +7,7 @@ const router = Router();
  *   name: Reviews
  *   description: Reviews management endpoints
  */
-router.get("/reviews/:id", get);
+router.get("/reviews", get);
 
 /**
  * @swagger

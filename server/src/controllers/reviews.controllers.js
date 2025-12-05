@@ -1,7 +1,7 @@
 import { ReviewsService } from "../services/reviewsService.js";
 
 export const get = async (req, res) => {
-  await ReviewsService.getReview(req.body, res);
+  await ReviewsService.getReviews(req.body, res);
 };
 export const add = async (req, res) => {
   await ReviewsService.addReview(req.body, res);

@@ -1,4 +1,4 @@
-import usePrudoctList from "../api/hooks/usePrudoct";
+import usePrudoctList from "../api/hooks/usePrudocts";
 import Loading from "./Loading";
 
 const Prudocts = (props) => {

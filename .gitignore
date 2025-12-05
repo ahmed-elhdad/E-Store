@@ -18,8 +18,10 @@ PROJECT_PLAN.md
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
+data.json
 .idea
 .DS_Store
+/uploads
 *.suo
 *.ntvs*
 *.njsproj

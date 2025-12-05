@@ -1,11 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { defaultInstance } from "../axiosInstant";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ?? "http://localhost:5000/api/v1";
-
-const fetchPrudocts = async ({ queryKey }) => {
-  const [, params] = queryKey;
+const fetchPrudocts = async () => {
   const response = await defaultInstance.get(`/prudocts`);
 
   // Support both { data: [] } and [] server responses

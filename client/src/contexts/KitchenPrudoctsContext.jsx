@@ -1,5 +1,5 @@
 import React, { createContext, useMemo, useState } from "react";
-import { usePrudoctList } from "../api/hooks/usePrudoct";
+import { usePrudoctList } from "../api/hooks/usePrudocts";
 export const KitchenPrudoctsContext = createContext();
 const KitchenPrudoctsContextProvider = ({ children }) => {
   const [prdcts, setPrudocts] = useState([
