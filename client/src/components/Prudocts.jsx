@@ -1,48 +1,44 @@
-import { use, useEffect, useState } from "react";
-
-import axios from "axios";
-import { instance } from "../api/axiosInstant";
 import usePrudoctList from "../api/hooks/usePrudoct";
 import Loading from "./Loading";
-const Prudocts = ({ category }) => {
-  const [showCounter, setShowCounter] = useState(true),
-    // { id, name = "", description, price, img, badge, isFavorite } = prudoct,
-    [counter, setCounter] = useState(0),
-    [items, setItems] = useState([]);
-  const {
-    data,
 
-    isError,
-    isFetched,
-
-    isLoading,
-
-    isSuccess,
-
-    refetch,
-    status,
-  } = usePrudoctList;
-  console.log(isSuccess);
-  console.log(isError);
-
-  return <div>{data}</div>;
-  // return (
-  //   <>
-  //     <div>
-  //       {isLoading ? (
-  //         <Loading />
-  //       ) : (
-  //         <div>
-  //           {data.data.map((item) => {
-  //             <div>{item.title}</div>;
-  //           })}
-  //         </div>
-  //       )}
-  //     </div>
-  //   </>
-  // );
+const Prudocts = (props) => {
+  const category = props.category;
+  const { data, isLoading, isError } = usePrudoctList({
+    category: category,
+  });
+  if (isLoading) return <Loading />;
+  if (isError) return <p>some thing went wrong</p>;
+  return (
+    <div className="w-full bg-white">
+      <div className="mx-auto max-w-3xlsm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
+        <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
+          {data.map((p, index) => (
+            <div className="group relative">
+              <img
+                src={p.images[0]}
+                className="aspect-square w-full rounded-md bg-gray-200 object-cover group-hover:opacity-75 lg:aspect-auto lg:h-80"
+              />
+              <div className="mt-4 flex justify-between">
+                <div>
+                  <h3 className="text-sm text-gray-700">
+                    <a href="#">
+                      <span
+                        aria-hidden="true"
+                        className="absolute inset-0"
+                      ></span>
+                      {p.title}
+                    </a>
+                  </h3>
+                  <p className="mt-1 text-sm text-gray-500">{p.description}</p>
+                </div>
+                <p className="text-sm font-medium text-gray-900">${p.price}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default Prudocts;
-
-// Finish project, the cart desgin make it fll screen in mobile and the mobile size in the lg screen, make all logic i make it for add prudoct to cart and when the user click finish from the cart you should check if all data you send to server like the data in cart if no edit the quantity by the endpoint i am created in server to edit prudoct from cart, the item in cart is have a prudoctId you will get the prudocts from server and search in those about this prudoctId in the list

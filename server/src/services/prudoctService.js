@@ -49,7 +49,7 @@ export class PrudoctService {
       });
       console.log("prudocts get successfully");
 
-      return res.status(200).json({ prudocts });
+      return res.status(200).json({ data: prudocts });
     } catch (error) {
       return res.status(500).json({ error: error.message });
     }

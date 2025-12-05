@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import PrimaryButton from "../components/ui/PrimaryButton";
-import { instance } from "../api/axiosInstant";
+import { defaultInstance } from "../api/axiosInstant";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -36,16 +36,19 @@ const Login = () => {
 
     setLoading(true);
     try {
-      const response = await instance.post(`${BASE_URL}/api/v1/auth/login`, {
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-        }),
-      });
+      const response = await defaultInstance.post(
+        `${BASE_URL}/api/v1/auth/login`,
+        {
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: formData.email,
+            password: formData.password,
+          }),
+        }
+      );
 
       // Check if response is JSON before parsing
       const contentType = response.headers.get("content-type");

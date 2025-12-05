@@ -1,17 +1,20 @@
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
+import { defaultInstance } from "../axiosInstant";
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ?? "http://localhost:5000/api/v1";
 
 const fetchPrudocts = async ({ queryKey }) => {
   const [, params] = queryKey;
-  const response = await axios.get(`${API_BASE_URL}/prudocts`, {
-    params,
-  });
+  const response = await defaultInstance.get(`/prudocts`);
 
   // Support both { data: [] } and [] server responses
-  return response?.data?.data ?? response?.data ?? [];
+  if (!response) {
+    return "error";
+  }
+  console.log("response: ", response.data.data);
+
+  return await response.data.data;
 };
 
 export const usePrudoctList = (params = {}, options = {}) =>

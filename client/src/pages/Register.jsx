@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { instance } from "../api/axiosInstant";
+import { defaultInstance } from "../api/axiosInstant";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -44,7 +44,7 @@ const Register = () => {
 
     setLoading(true);
     try {
-      const response = await instance.post(`${BASE_URL}/api/v1/auth/register`, {
+      const response = await defaultInstance.post(`${BASE_URL}/api/v1/auth/register`, {
         method: "POST",
         credentials: "include",
         headers: {

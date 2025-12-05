@@ -1,6 +1,13 @@
 import axios from "axios";
-export const instance = axios.create({
-  baseURL: "https://some-domain.com/api/",
-  timeout: 1000,
-  headers: { "X-Custom-Header": "foobar" },
+export const formDataInstance = axios.create({
+  baseURL: import.meta.env.VITE_BASE_URL,
+  headers: {
+    "Content-Type": `application/form-data`,
+  },
+});
+export const defaultInstance = axios.create({
+  baseURL: import.meta.env.VITE_BASE_URL,
+  headers: {
+    "Content-Type": `application/json`,
+  },
 });

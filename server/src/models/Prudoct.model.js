@@ -5,6 +5,7 @@ const prudoctSchema = new mongoose.Schema({
   description: { type: String, required: true },
   category: { type: String, required: true, index: true },
   images: { type: Array, required: true },
+  reviews: { type: Array, required: true },
   price: { type: Number, required: true },
   saler: { type: String, required: true },
   quantity: { type: Number, required: true },
