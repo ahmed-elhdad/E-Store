@@ -2,20 +2,17 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { defaultInstance } from "../api/axiosInstant";
-
+import { useAuth } from "../api/hooks/useauth";
 const Register = () => {
   const navigate = useNavigate();
-  const BASE_URL = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
   const [formData, setFormData] = useState({
       name: "",
       email: "",
       password: "",
     }),
     [inputType, setInputType] = useState("password"),
-    [loading, setLoading] = useState(false),
     [errors, setErrors] = useState({ name: "", email: "", password: "" }),
-    emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,63}$/,
-    [serverError, setServerError] = useState("");
+    emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,63}$/
   const validate = () => {
     const newErrors = { name: "", email: "", password: "" };
     let isValid = true;
@@ -35,62 +32,6 @@ const Register = () => {
 
     setErrors(newErrors);
     return isValid;
-  };
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setServerError("");
-    const isValid = validate();
-    if (!isValid) return;
-
-    setLoading(true);
-    try {
-      const response = await defaultInstance.post(`${BASE_URL}/api/v1/auth/register`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-        }),
-      });
-
-      // Check if response is JSON before parsing
-      const contentType = response.headers.get("content-type");
-      if (!contentType || !contentType.includes("application/json")) {
-        const text = await response.text();
-        setServerError(
-          "Server returned an invalid response. Please check if the API is running."
-        );
-        console.error("Non-JSON response:", text);
-        return;
-      }
-
-      const data = await response.json();
-
-      if (response.ok) {
-        const { token, user } = data || {};
-        if (token) {
-          localStorage.setItem("token", token);
-        }
-        if (user) {
-          localStorage.setItem("user", JSON.stringify(user));
-        }
-        console.log("Register successful:", user || data);
-        // Navigate to home page after successful registration
-        navigate("/");
-      } else {
-        setServerError(
-          data?.message || "Registration failed. Please try again."
-        );
-      }
-    } catch (err) {
-      setServerError(err.message || "Network error. Please try again.");
-    } finally {
-      setLoading(false);
-    }
   };
 
   const togglePasswordVisibility = () => {
@@ -113,7 +54,7 @@ const Register = () => {
 
           {/* Form Container */}
           <div className="bg-white rounded-lg shadow-lg p-6 sm:p-8">
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={(e) => {}} className="space-y-6">
               {/* Username Field */}
 
               <div className="space-y-2">
@@ -227,17 +168,17 @@ const Register = () => {
               </div>
 
               {/* Server error */}
-              {serverError && (
-                <div className="text-red-600 text-sm pb-2">{serverError}</div>
+              {isError && (
+                <div className="text-red-600 text-sm pb-2">internal server error</div>
               )}
 
               {/* Register Button */}
               <button
                 type="submit"
-                disabled={loading}
+                disabled={}
                 className="w-full cursor-pointer bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold py-2 sm:py-3 rounded-lg transition duration-200 ease-in-out transform hover:scale-105 active:scale-95"
               >
-                {loading ? "Registering..." : "Register"}
+                { ? "Registering..." : "Register"}
               </button>
             </form>
 
