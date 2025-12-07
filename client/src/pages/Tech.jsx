@@ -13,7 +13,7 @@ const Tech = () => {
         <CategoriesSection data={categories} />
         <div className="mt-6 flex gap-4 ">
           <Filter />
-          <Prudocts />
+          <Prudocts category='tech' />
         </div>
       </main>
     </div>

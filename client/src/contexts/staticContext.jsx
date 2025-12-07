@@ -17,7 +17,7 @@ const StaticContextProvider = ({ children }) => {
     },
     {
       name: "home",
-      link: "/prudocts/home",
+      link: "/prudocts/homes",
     },
   ];
   const gamesPrefixes = [

@@ -1,5 +1,4 @@
 import Prudoct from "../models/Prudoct.model.js";
-import User from "../models/User.model.js";
 import { idValidation } from "../middleware/idValidation.js";
 import { CheckExit } from "../middleware/checkExit.js";
 import { getProductImageUrl } from "../config/multer.config.js";
@@ -55,90 +54,6 @@ export class PrudoctService {
     }
   }
   static async createPrudoct(req, res) {
-    // try {
-    //   const {
-    //     title,
-    //     description,
-    //     category,
-    //     price,
-    //     saler,
-    //     quantity,
-    //     prudoctNo,
-    //   } = req.body;
-
-    //   // Handle uploaded files
-    //   let imagePaths = [];
-    //   if (req.files && req.files.length > 0) {
-    //     imagePaths = req.files.map((file) => file.filename);
-    //   } else if (req.body.images) {
-
-    //     imagePaths = Array.isArray(req.body.images)
-    //       ? req.body.images
-    //       : [req.body.images];
-    //   }
-
-    //   if (
-    //     !title ||
-    //     !description ||
-    //     !category ||
-    //     imagePaths.length === 0 ||
-    //     price === undefined ||
-    //     !saler ||
-    //     quantity === undefined
-    //   ) {
-    //     return res.status(400).json({
-    //       error:
-    //         "All required fields must be provided including at least one image",
-    //     });
-    //   }
-
-    //   const prudoctExit = await Prudoct.findOne({ title: title });
-    //   if (prudoctExit) {
-    //     return res
-    //       .status(409)
-    //       .json({ error: "Product with this title already exists" });
-    //   }
-
-    //   const salerExit = await CheckExit.checkUserByEmail(saler);
-    //   if (!salerExit) {
-    //     return res.status(404).json({ error: "Seller not found" });
-    //   }
-
-    //   if (price <= 0) {
-    //     return res.status(400).json({ error: "Price must be greater than 0" });
-    //   }
-
-    //   if (quantity <= 0) {
-    //     return res
-    //       .status(400)
-    //       .json({ error: "Quantity must be greater than 0" });
-    //   }
-
-    //   const prudoct = new Prudoct({
-    //     title,
-    //     description,
-    //     category,
-    //     images: imagePaths,
-    //     price: parseFloat(price),
-    //     saler,
-    //     quantity: parseInt(quantity),
-    //     prudoctNo: prudoctNo || undefined,
-    //   });
-
-    //   await prudoct.save();
-
-    //   // Convert image paths to URLs in response
-    //   if (prudoct.images) {
-    //     prudoct.images = prudoct.images.map((img) => getProductImageUrl(img));
-    //   }
-
-    //   return res
-    //     .status(201)
-    //     .json({ message: "Product created successfully", data: prudoct });
-    // } catch (error) {
-    //   console.error(error);
-    //   return res.status(500).json({ error: error.message });
-    // }
     try {
       const {
         title,
@@ -159,12 +74,13 @@ export class PrudoctService {
       }
 
       const imagePaths = req.files.map((file) => file.filename);
-
+      const allowedCategories = "kitchen" || "tech" || "homes" || "sport";
       // Validate required fields
       if (
         !title ||
         !description ||
         !category ||
+        !allowedCategories.match(allowedCategories) ||
         price === undefined ||
         !saler ||
         quantity === undefined

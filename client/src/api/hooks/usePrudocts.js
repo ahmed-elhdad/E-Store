@@ -1,10 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { defaultInstance } from "../axiosInstant";
 
-const fetchPrudocts = async () => {
-  const response = await defaultInstance.get(`/prudocts`);
+const fetchPrudocts = async ({ queryKey }) => {
+  const [, params] = queryKey;
+  console.log("cateory: ", params.category);
 
-  // Support both { data: [] } and [] server responses
+  const response = await defaultInstance.get(`/prudocts?category=${params.category}`);
+
   if (!response) {
     return "error";
   }

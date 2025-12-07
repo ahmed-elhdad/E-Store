@@ -8,6 +8,7 @@ const Prudocts = (props) => {
   });
   if (isLoading) return <Loading />;
   if (isError) return <p>some thing went wrong</p>;
+  if (data.length <= 0) return <p>No Prudocts available right now</p>;
   return (
     <div className="w-full bg-white">
       <div className="mx-auto max-w-3xlsm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
