@@ -61,7 +61,19 @@ const Header = () => {
 
               {/* User Account - Desktop */}
               {user !== null ? (
-                <div>welcome</div>
+                <div>
+                  {user.photo === "" ? (
+                    <h2 className="rounded-full size-20 bg-gray-800 text-white text-2xl capitalize">
+                      {user.name.slice(0, 2)}
+                    </h2>
+                  ) : (
+                    <img
+                      className="size-20 rounded-full"
+                      src={user.photo}
+                      alt="user profile photo"
+                    />
+                  )}
+                </div>
               ) : (
                 <div className="hidden md:flex items-center space-x-2">
                   <Link
@@ -107,23 +119,30 @@ const Header = () => {
           {/* Mobile Menu */}
           {isMobileMenuOpen && (
             <div className="md:hidden border-t border-gray-200 py-4">
-              {user ? (
-                <>jkhjklh</>
+              {user !== null ? (
+                <div>
+                  {user.photo === "" ? (
+                    <h2 className="rounded-full size-20 bg-gray-800 text-white text-2xl capitalize">
+                      {user.name.slice(0, 2)}
+                    </h2>
+                  ) : (
+                    <img
+                      className="size-20 rounded-full"
+                      src={user.photo}
+                      alt="user profile photo"
+                    />
+                  )}
+                </div>
               ) : (
-                <div className="flex flex-col space-y-3">
+                <div className="hidden md:flex items-center space-x-2">
                   <Link
-                    to="/auth/login"
+                    to="auth/login"
                     className="px-4 py-2 text-gray-700 hover:text-blue-600 font-medium transition-colors"
-                    onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Log in
                   </Link>
-                  <Link
-                    to="auth/register"
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-center transition-colors"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Register
+                  <Link to="auth/register">
+                    <PrimaryButton text={"register"} />
                   </Link>
                 </div>
               )}
