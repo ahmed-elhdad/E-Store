@@ -1,10 +1,10 @@
 import React, { use, useState } from "react";
 import { Link } from "react-router-dom";
-import { IconContext } from "react-icons";
 import { FaBars, FaCartPlus, FaSearch } from "react-icons/fa";
 import { AppContext } from "../contexts/AppContext";
 import Cart from "./Cart";
-import PrimaryButton from "./ui/PrimaryButton";
+import PrimaryButton from "./ui/buttons/PrimaryButton";
+import Logo from "./ui/logos/Logo";
 
 const Header = () => {
   const { user } = use(AppContext);
@@ -19,12 +19,7 @@ const Header = () => {
           <div className="flex items-center justify-between h-16 md:h-20">
             {/* Logo/Brand */}
             <div className="flex items-center shrink-0">
-              <Link
-                to="/"
-                className="text-2xl font-bold text-gray-900 hover:text-blue-600 transition-colors"
-              >
-                E-Store
-              </Link>
+              <Logo />
             </div>
 
             {/* Search Bar - Desktop */}

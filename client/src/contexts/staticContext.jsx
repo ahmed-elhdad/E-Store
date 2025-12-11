@@ -7,10 +7,7 @@ const StaticContextProvider = ({ children }) => {
       name: "tech",
       link: "/prudocts/tech",
     },
-    {
-      name: "sport",
-      link: "/prudocts/sport",
-    },
+
     {
       name: "kitchen",
       link: "/prudocts/kitchen",
@@ -18,6 +15,10 @@ const StaticContextProvider = ({ children }) => {
     {
       name: "home",
       link: "/prudocts/homes",
+    },
+    {
+      name: "clothes",
+      link: "/prudocts/clothes",
     },
   ];
   const gamesPrefixes = [
@@ -95,7 +96,6 @@ const StaticContextProvider = ({ children }) => {
       img: "/public/keyBoard.png",
       name: "accessories",
     },
-
   ];
   const value = {
     navBarItems,

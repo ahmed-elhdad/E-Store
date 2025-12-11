@@ -3,8 +3,11 @@ import CategoriesSection from "../components/CategoriesSection";
 import Filter from "../components/Filter.jsx";
 import Prudocts from "../components/Prudocts.jsx";
 ("use client");
-const Sport = () => {
-  const categories = [{ img: "../../public/chair.png", name: "boat" }];
+const Clothes = () => {
+  const categories = [
+    { image: "/client/public/shoes.png", title: "clasic shoeses" },
+    { image: "/client/public/T-shirt.png", title: "T-shirts" },
+  ];
   return (
     <>
       <div>
@@ -13,7 +16,7 @@ const Sport = () => {
           <CategoriesSection data={categories} />
           <div className="mt-6 flex gap-4 ">
             <Filter />
-            <Prudocts category="sport" />
+            <Prudocts category="clothes" />
           </div>
         </main>
       </div>
@@ -21,4 +24,4 @@ const Sport = () => {
   );
 };
 
-export default Sport;
+export default Clothes;

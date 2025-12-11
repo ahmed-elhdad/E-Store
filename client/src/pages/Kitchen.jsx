@@ -2,7 +2,6 @@ import Header from "../components/Header";
 import CategoriesSection from "../components/CategoriesSection";
 import Filter from "../components/Filter.jsx";
 import Prudocts from "../components/Prudocts.jsx";
-("use client");
 const Kitchen = () => {
   const categories = [{ img: "../../public/Home_Decor.png", name: "decor" }];
   return (

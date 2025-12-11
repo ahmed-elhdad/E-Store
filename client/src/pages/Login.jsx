@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import PrimaryButton from "../components/ui/PrimaryButton";
+import PrimaryButton from "../components/ui/buttons/PrimaryButton";
 import { defaultInstance } from "../api/axiosInstant";
 
 const Login = () => {

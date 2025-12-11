@@ -1,38 +1,72 @@
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { defaultInstance } from "../api/axiosInstant";
-import { useAuth } from "../api/hooks/useauth";
+import { defaultInstance, formDataInstance } from "../api/axiosInstant";
+import { AppContext } from "../contexts/AppContext";
+import Logo from "../components/ui/logos/Logo";
 const Register = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
+
+  const { user, setUser } = use(AppContext),
+    [formData, setFormData] = useState({
       name: "",
       email: "",
       password: "",
+      server: "",
     }),
+    [isValid, setIsValid] = useState(false),
     [inputType, setInputType] = useState("password"),
     [errors, setErrors] = useState({ name: "", email: "", password: "" }),
-    emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,63}$/
+    [isLoading, setIsLoading] = useState(false),
+    emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,63}$/;
   const validate = () => {
-    const newErrors = { name: "", email: "", password: "" };
-    let isValid = true;
+      const newErrors = { name: "", email: "", password: "" };
+      setIsValid(true);
 
-    if (!formData.name || formData.name.trim() === "") {
-      newErrors.name = "Name is required";
-      isValid = false;
-    }
-    if (!formData.email || !formData.email.match(emailRegex)) {
-      newErrors.email = "Enter a valid email";
-      isValid = false;
-    }
-    if (!formData.password || formData.password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters";
-      isValid = false;
-    }
+      if (!formData.name || formData.name.trim() === "") {
+        newErrors.name = "Name is required";
+        setIsValid(false);
+      }
+      if (!formData.email || !formData.email.match(emailRegex)) {
+        newErrors.email = "Enter a valid email";
+        setIsValid(false);
+      }
+      if (!formData.password || formData.password.length < 6) {
+        newErrors.password = "Password must be at least 6 characters";
+        setIsValid(false);
+      }
 
-    setErrors(newErrors);
-    return isValid;
-  };
+      setErrors(newErrors);
+      return isValid;
+    },
+    handleSubmit = async (e) => {
+      e.preventDefault();
+      setIsLoading(true);
+      const valid = validate();
+      if (valid) {
+        setIsLoading(false);
+
+        return;
+      }
+      const res = defaultInstance.post("/auth/new", {
+        body: {
+          email: formData.email,
+          password: formData.password,
+          name: formData.name,
+        },
+      });
+      console.log(res);
+
+      if (res.status < 200 || res.status > 201) {
+        setIsLoading(false);
+        setErrors({ ...errors, server: res.message || res.error });
+
+        return;
+      }
+      localStorage.setItem("token", res.token);
+      setUser(res.user || res.data);
+      setIsLoading(false);
+    };
 
   const togglePasswordVisibility = () => {
     setInputType(inputType === "password" ? "text" : "password");
@@ -44,9 +78,7 @@ const Register = () => {
         <div className="w-full max-w-md">
           {/* Header */}
           <div className="text-center mb-8">
-            <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-2">
-              E-Store
-            </h1>
+            <Logo />
             <p className="text-gray-600 text-sm sm:text-base">
               Welcome to your store
             </p>
@@ -54,7 +86,7 @@ const Register = () => {
 
           {/* Form Container */}
           <div className="bg-white rounded-lg shadow-lg p-6 sm:p-8">
-            <form onSubmit={(e) => {}} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
               {/* Username Field */}
 
               <div className="space-y-2">
@@ -168,17 +200,19 @@ const Register = () => {
               </div>
 
               {/* Server error */}
-              {isError && (
-                <div className="text-red-600 text-sm pb-2">internal server error</div>
+              {errors.server && (
+                <div className="text-red-600 text-sm pb-2">
+                  internal server error
+                </div>
               )}
 
               {/* Register Button */}
               <button
                 type="submit"
-                disabled={}
+                disabled={isLoading}
                 className="w-full cursor-pointer bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold py-2 sm:py-3 rounded-lg transition duration-200 ease-in-out transform hover:scale-105 active:scale-95"
               >
-                { ? "Registering..." : "Register"}
+                {isLoading ? "Registering..." : "Register"}
               </button>
             </form>
 
