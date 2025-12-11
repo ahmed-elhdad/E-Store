@@ -5,11 +5,23 @@ import { usePrudoct } from "../api/hooks/usePrudcot";
 import Laoding from "../components/Laoding";
 import Header from "../components/Header";
 import QuantityButton from "../components/ui/buttons/QuantityButton";
+import AddToCart from "../components/ui/buttons/AddToCart";
+import { defaultInstance } from "../api/axiosInstant";
 
 const Prudoct = () => {
   const { id } = useParams();
   const { isLoading, isError, data } = usePrudoct({ id: id }),
-    [quantity, setQuantity] = React.useState(1);
+    [quantity, setQuantity] = React.useState(1),
+    handleAddToCart = async (e) => {
+      e.preventDefault();
+      const res = defaultInstance.post("/cart/add", {
+        body: {
+          productId: id,
+          quantity: quantity,
+        },
+      });
+      if (res.st)
+    };
   if (isError) return <h1>some thing went wrong</h1>;
   if (isLoading) return <Laoding />;
 
@@ -103,12 +115,7 @@ const Prudoct = () => {
                 </div>
               </form>
               <div className="mt-6 flex gap-3">
-                <button
-                  type="button"
-                  className="cursor-pointer inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none"
-                >
-                  Add to cart
-                </button>
+                <AddToCart AddToCart={handleAddToCart} />
                 <button
                   type="button"
                   className="cursor-pointer inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none"

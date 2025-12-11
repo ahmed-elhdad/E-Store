@@ -1,12 +1,13 @@
 import { Link } from "react-router";
 import usePrudoctList from "../api/hooks/usePrudocts";
 import Loading from "./Loading";
+import AddToCart from "./ui/buttons/AddToCart";
 
 const Prudocts = (props) => {
   const category = props.category;
   const { data, isLoading, isError } = usePrudoctList({
-    category: category,
-  });
+      category: category,
+    });
   if (isLoading) return <Loading />;
   if (isError) return <p>some thing went wrong</p>;
   if (data.length <= 0) return <p>No Prudocts available right now</p>;
