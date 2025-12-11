@@ -63,6 +63,7 @@ export class PrudoctService {
         saler,
         quantity,
         prudoctNo,
+        nested_category,
       } = await req.body;
 
       // Handle uploaded files (Multer)
@@ -83,6 +84,7 @@ export class PrudoctService {
         !allowedCategories.match(allowedCategories) ||
         price === undefined ||
         !saler ||
+        !nested_category ||
         quantity === undefined
       ) {
         return res.status(400).json({
@@ -123,6 +125,7 @@ export class PrudoctService {
         images: imagePaths,
         price: parseFloat(price),
         saler,
+        nested_category,
         quantity: parseInt(quantity),
         prudoctNo: prudoctNo || undefined,
       });

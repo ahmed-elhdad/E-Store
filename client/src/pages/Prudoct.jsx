@@ -20,7 +20,6 @@ const Prudoct = () => {
           quantity: quantity,
         },
       });
-      if (res.st)
     };
   if (isError) return <h1>some thing went wrong</h1>;
   if (isLoading) return <Laoding />;

@@ -77,12 +77,12 @@ const Header = () => {
               ) : (
                 <div className="hidden md:flex items-center space-x-2">
                   <Link
-                    to="auth/login"
+                    to="/auth/login"
                     className="px-4 py-2 text-gray-700 hover:text-blue-600 font-medium transition-colors"
                   >
                     Log in
                   </Link>
-                  <Link to="auth/register">
+                  <Link to="/auth/register">
                     <PrimaryButton text={"register"} />
                   </Link>
                 </div>
@@ -136,12 +136,12 @@ const Header = () => {
               ) : (
                 <div className="hidden md:flex items-center space-x-2">
                   <Link
-                    to="auth/login"
+                    to="/auth/login"
                     className="px-4 py-2 text-gray-700 hover:text-blue-600 font-medium transition-colors"
                   >
                     Log in
                   </Link>
-                  <Link to="auth/register">
+                  <Link to="/auth/register">
                     <PrimaryButton text={"register"} />
                   </Link>
                 </div>

@@ -12,11 +12,15 @@ const Register = () => {
       name: "",
       email: "",
       password: "",
-      server: "",
     }),
     [isValid, setIsValid] = useState(false),
     [inputType, setInputType] = useState("password"),
-    [errors, setErrors] = useState({ name: "", email: "", password: "" }),
+    [errors, setErrors] = useState({
+      name: "",
+      email: "",
+      password: "",
+      server: "",
+    }),
     [isLoading, setIsLoading] = useState(false),
     emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,63}$/;
   const validate = () => {
@@ -48,11 +52,9 @@ const Register = () => {
 
         return;
       }
-      const res = defaultInstance.post("/auth/new", {
+      const res = formDataInstance.post("/auth/new", {
         body: {
-          email: formData.email,
-          password: formData.password,
-          name: formData.name,
+          ...formData,
         },
       });
       console.log(res);
@@ -86,6 +88,7 @@ const Register = () => {
 
           {/* Form Container */}
           <div className="bg-white rounded-lg shadow-lg p-6 sm:p-8">
+            <div>{errors.server}</div>
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Username Field */}
 

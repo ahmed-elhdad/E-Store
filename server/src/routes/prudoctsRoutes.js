@@ -92,6 +92,7 @@ router.get("/:id", getPrudoct);
  *               - title
  *               - description
  *               - category
+ *               - nested_category
  *               - images
  *               - price
  *               - saler
@@ -105,6 +106,9 @@ router.get("/:id", getPrudoct);
  *                 example: High-performance laptop
  *               category:
  *                 type: string
+ *                 example: tech
+ *                nested_category:
+ *                  type: string
  *                 example: tech
  *               images:
  *                 type: array
