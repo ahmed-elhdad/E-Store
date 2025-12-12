@@ -37,11 +37,11 @@ export class ReviewsService {
     if (!existingUser || !existingPrudoct)
       return res.status(404).json({ error: "user or prudcot not found" });
     const review = {
-        id: mongoose.Types.ObjectId.createFromTime(Date.now()),
+        id: new mongoose.Types.ObjectId(),
         userId: userId,
         text: text,
-      },
-      currentReviews = existingPrudoct.reviews;
+      };
+    const currentReviews = Array.isArray(existingPrudoct.reviews) ? existingPrudoct.reviews : [];
     currentReviews.push(review);
     existingPrudoct.reviews = currentReviews;
     await existingPrudoct.save();

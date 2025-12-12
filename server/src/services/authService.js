@@ -29,7 +29,8 @@ export class AuthService {
       if (userData.photo) {
         userData.photo = getUserPhotoUrl(userData.photo);
       }
-
+      // Don't Return password to Front-End
+      delete userData.password;
       return res.status(200).json({ data: userData });
     } catch (error) {
       return res.status(500).json({ error: error.message });
@@ -73,7 +74,7 @@ export class AuthService {
       const token = jwt.sign(
         { id: user._id, email: user.email },
         process.env.JWT_SECRET,
-        { expiresIn: "7d" }
+        { expiresIn: "1h" }
       );
 
       // Remove password from response
@@ -84,7 +85,8 @@ export class AuthService {
       if (userData.photo) {
         userData.photo = getUserPhotoUrl(userData.photo);
       }
-
+      // Don't return password for front-end
+      delete userData.password;
       return res.status(201).json({
         message: "User registered successfully",
         token,
@@ -117,6 +119,7 @@ export class AuthService {
 
       // Remove password from response
       const userData = user.toObject();
+      // Don't Return password to Front-End
       delete userData.password;
 
       return res
@@ -230,6 +233,7 @@ export class AuthService {
       );
 
       const userData = user.toObject();
+      // Don't Return password to Front-End
       delete userData.password;
 
       return res.status(200).json({
@@ -269,6 +273,7 @@ export class AuthService {
       );
 
       const userData = user.toObject();
+      // Don't Return password to Front-End
       delete userData.password;
 
       return res.status(200).json({

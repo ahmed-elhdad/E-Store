@@ -1,11 +1,11 @@
 import React, { use, useState } from "react";
 import { AppContext } from "../contexts/AppContext";
 import axios from "axios";
+import { formDataInstance } from "../api/axiosInstance";
 
 const AddPrudoct = () => {
-  const context = use(AppContext);
-  const user = context.user;
-  const [fromData, setFormData] = useState({
+  const { user } = use(AppContext);
+  const [formData, setFormData] = useState({
       title: "",
       description: "",
       quantity: 0,
@@ -21,59 +21,52 @@ const AddPrudoct = () => {
       images: "",
       price: "",
     }),
-    BASE_URL = import.meta.env.VITE_BASE_URL || "http://localhost:5000/api/v1";
-  let res = "";
-  const fetchAPI = async () => {
-      res = await axios.post(
-        `${BASE_URL}/prudocts`,
-        { ...fromData },
-
-        JSON.stringify({ ...FormData, saler: user.email,token })
-      );
-    },
     validation = async () => {
       // Check if data empty
-      if (!fromData.title) {
+      if (!formData.title) {
         setErros({ ...errors, title: "title required" });
         return;
       } else {
         setErros({ ...errors, title: "" });
       }
-      if (!fromData.description) {
+      if (!formData.description) {
         setErros({ ...errors, description: "description required" });
         return;
       } else {
         setErros({ ...errors, description: "" });
       }
-      if (!fromData.quantity || fromData.quantity == 0) {
+      if (!formData.quantity || formData.quantity == 0) {
         setErros({ ...errors, quantity: "quantity required" });
         return;
       } else {
         setErros({ ...errors, quantity: "" });
       }
-      if (!fromData.categoy) {
+      if (!formData.categoy) {
         setErros({ ...errors, categoy: "categoy required" });
         return;
       } else {
         setErros({ ...errors, categoy: "" });
       }
-      if (!fromData.images || fromData.images.length == 0) {
+      if (!formData.images || formData.images.length == 0) {
         setErros({ ...errors, images: "images required" });
         return;
       } else {
         setErros({ ...errors, images: "" });
       }
-      if (!fromData.price) {
+      if (!formData.price) {
         setErros({ ...errors, price: "price required" });
         return;
       } else {
         setErros({ ...errors, price: "" });
       }
     };
+  let res;
   const handleSubmit = async (e) => {
     e.preventDefault();
     validation();
-    fetchAPI();
+    res = formDataInstance.post("/prudocts", {
+      body: JSON.stringify(formData),
+    });
   };
   const categories = ["tech", "home", "kitchen"];
   return (
@@ -92,7 +85,7 @@ const AddPrudoct = () => {
                 errors.title ? "border-red-600" : "border-blue-500"
               } transition-colors  w-full p-3`}
               onChange={(e) =>
-                setFormData({ ...fromData, title: e.target.value })
+                setFormData({ ...formData, title: e.target.value })
               }
             />
             {errors.title && (
@@ -113,7 +106,7 @@ const AddPrudoct = () => {
                 errors.description ? "border-red-600" : "border-blue-500"
               } transition-colors  w-full p-3`}
               onChange={(e) =>
-                setFormData({ ...fromData, description: e.target.value })
+                setFormData({ ...formData, description: e.target.value })
               }
             />
             {errors.description && (
@@ -137,7 +130,7 @@ const AddPrudoct = () => {
               {categories.map((c, index) => (
                 <option
                   onClick={(e) =>
-                    setFormData({ ...fromData, categoy: e.textContent })
+                    setFormData({ ...formData, categoy: e.textContent })
                   }
                   className="capitalize cursor-pointer"
                   key={index}
@@ -166,7 +159,7 @@ const AddPrudoct = () => {
                 errors.price ? "border-red-600" : "border-blue-500"
               } transition-colors  w-full p-3`}
               onChange={(e) =>
-                setFormData({ ...fromData, price: Number(e.target.value) })
+                setFormData({ ...formData, price: Number(e.target.value) })
               }
             />
             {errors.price && (
@@ -188,7 +181,7 @@ const AddPrudoct = () => {
                 errors.quantity ? "border-red-600" : "border-blue-500"
               } transition-colors  w-full p-3`}
               onChange={(e) =>
-                setFormData({ ...fromData, quantity: Number(e.target.value) })
+                setFormData({ ...formData, quantity: Number(e.target.value) })
               }
             />
             {errors.quantity && (
@@ -211,8 +204,8 @@ const AddPrudoct = () => {
               type="file"
               onChange={(e) =>
                 setFormData({
-                  ...fromData,
-                  images: [...fromData.images, e.target.value],
+                  ...formData,
+                  images: [...formData.images, e.target.value],
                 })
               }
             />

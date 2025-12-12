@@ -1,7 +1,7 @@
 import React, { use, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { defaultInstance, formDataInstance } from "../api/axiosInstant";
+import { defaultInstance, formDataInstance } from "../api/axiosInstance";
 import { AppContext } from "../contexts/AppContext";
 import Logo from "../components/ui/logos/Logo";
 const Register = () => {
