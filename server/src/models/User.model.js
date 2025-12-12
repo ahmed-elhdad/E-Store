@@ -23,6 +23,8 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  phone_number: { type: String, required: false, unique: true },
+  credit_card: { type: String, required: false, unique: true },
   cart: [
     {
       productId: { type: mongoose.Schema.Types.ObjectId, ref: "Prudoct" },

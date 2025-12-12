@@ -61,7 +61,7 @@ const Header = () => {
 
               {/* User Account - Desktop */}
               {user !== null ? (
-                <div>
+                <><div>
                   {user.photo === "" ? (
                     <h2 className="rounded-full size-20 bg-gray-800 text-white text-2xl capitalize">
                       {user.name.slice(0, 2)}
@@ -70,10 +70,20 @@ const Header = () => {
                     <img
                       className="size-20 rounded-full"
                       src={user.photo}
-                      alt="user profile photo"
-                    />
+                      alt="user profile photo" />
                   )}
-                </div>
+                </div><div>
+                    {user.photo === "" ? (
+                      <h2 className="rounded-full size-20 bg-gray-800 text-white text-2xl capitalize">
+                        {user.name.slice(0, 2)}
+                      </h2>
+                    ) : (
+                      <img
+                        className="size-20 rounded-full"
+                        src={user.photo}
+                        alt="user profile photo" />
+                    )}
+                  </div></>
               ) : (
                 <div className="hidden md:flex items-center space-x-2">
                   <Link
@@ -116,41 +126,40 @@ const Header = () => {
             </div>
           </div>
 
-          {/* Mobile Menu */}
-          {isMobileMenuOpen && (
-            <div className="md:hidden border-t border-gray-200 py-4">
-              {user !== null ? (
-                <div>
-                  {user.photo === "" ? (
-                    <h2 className="rounded-full size-20 bg-gray-800 text-white text-2xl capitalize">
-                      {user.name.slice(0, 2)}
-                    </h2>
-                  ) : (
-                    <img
-                      className="size-20 rounded-full"
-                      src={user.photo}
-                      alt="user profile photo"
-                    />
-                  )}
-                </div>
-              ) : (
-                <div className="hidden md:flex items-center space-x-2">
-                  <Link
-                    to="/auth/login"
-                    className="px-4 py-2 text-gray-700 hover:text-blue-600 font-medium transition-colors"
-                  >
-                    Log in
-                  </Link>
-                  <Link to="/auth/register">
-                    <PrimaryButton text={"register"} />
-                  </Link>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-        {showCart && <Cart />}
-      </header>
+    {/* Mobile Menu */}
+    {isMobileMenuOpen && (
+      <div className="md:hidden border-t border-gray-200 py-4">
+        {user !== null ? (
+          <div>
+            {user.photo === "" ? (
+              <h2 className="rounded-full size-20 bg-gray-800 text-white text-2xl capitalize">
+                {user.name.slice(0, 2)}
+              </h2>
+            ) : (
+              <img
+                className="size-20 rounded-full"
+                src={user.photo}
+                alt="user profile photo"
+              />
+            )}
+          </div>
+        ) : (
+          <div className="flex items-center space-x-2">
+            <Link
+              to="/auth/login"
+              className="px-4 py-2 text-gray-700 hover:text-blue-600 font-medium transition-colors"
+            >
+              Log in
+            </Link>
+            <Link to="/auth/register">
+              <PrimaryButton text={"register"} />
+            </Link>
+          </div>
+        )}
+      </div>
+    )}
+  </div>
+</header>
     </>
   );
 };

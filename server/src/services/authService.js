@@ -38,7 +38,7 @@ export class AuthService {
   }
   static async register(req, res) {
     try {
-      const { name, email, password, role } = req.body;
+      const { name, email, password, role ,phone_number,credit_card} = req.body;
 
       // Handle uploaded photo if exists
       let photo = "";
@@ -48,10 +48,10 @@ export class AuthService {
         photo = req.body.photo;
       }
 
-      if (!name || !email || !password) {
+      if (!name || !email || !password || !phone_number || !credit_card) {
         return res
           .status(400)
-          .json({ message: "Provide name, email and password" });
+          .json({ message: "Provide name, email, password, phone_number and credit_card" });
       }
       if (!emailRegex.test(email)) {
         return res.status(400).json({ message: "Invalid email format" });

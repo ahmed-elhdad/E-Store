@@ -6,24 +6,16 @@ import Laoding from "../components/Laoding";
 import Header from "../components/Header";
 import QuantityButton from "../components/ui/buttons/QuantityButton";
 import AddToCart from "../components/ui/buttons/AddToCart";
-import { defaultInstance } from "../api/axiosInstant";
 
 const Prudoct = () => {
   const { id } = useParams();
   const { isLoading, isError, data } = usePrudoct({ id: id }),
-    [quantity, setQuantity] = React.useState(1),
-    handleAddToCart = async (e) => {
-      e.preventDefault();
-      const res = defaultInstance.post("/cart/add", {
-        body: {
-          productId: id,
-          quantity: quantity,
-        },
-      });
-    };
+    [quantity, setQuantity] = React.useState(1);
   if (isError) return <h1>some thing went wrong</h1>;
   if (isLoading) return <Laoding />;
-
+  const handleAddToCart = async (e) => {
+    e.preventDefault();
+  };
   return (
     <>
       <Header />

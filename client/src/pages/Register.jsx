@@ -12,6 +12,8 @@ const Register = () => {
       name: "",
       email: "",
       password: "",
+      phone_number: "",
+      credit_card: "",
     }),
     [isValid, setIsValid] = useState(false),
     [inputType, setInputType] = useState("password"),
@@ -19,6 +21,8 @@ const Register = () => {
       name: "",
       email: "",
       password: "",
+      phone_number: "",
+      credit_card: "",
       server: "",
     }),
     [isLoading, setIsLoading] = useState(false),
@@ -41,6 +45,7 @@ const Register = () => {
       }
 
       setErrors(newErrors);
+      // complete with validate the phone_number and credit_card
       return isValid;
     },
     handleSubmit = async (e) => {
@@ -184,7 +189,33 @@ const Register = () => {
                   </span>
                 )}
               </div>
+              {/* Phone Number Field */}
 
+              <div className="space-y-2">
+                <label
+                  htmlFor="phoneNumberField"
+                  className="block text-gray-700 font-medium text-sm sm:text-base"
+                >
+                  Phone Number
+                </label>
+                <input
+                  id="phoneNumberField"
+                  className="w-full px-4 py-2 sm:py-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                  onChange={(e) => {
+                    setFormData({ ...formData, phone_number: e.target.value });
+                  }}
+                  type="text"
+                  name="phoneNumberField"
+                  placeholder="Enter your phone number"
+                  value={formData.phone_number}
+                  required
+                />
+                {errors.phone_number && (
+                  <span className="px-1 font-medium capitalize text-red-600">
+                    {errors.phone_number}
+                  </span>
+                )}
+              </div>
               {/* Remember Me & Reset Password */}
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm">
                 <label className="flex items-center gap-2 text-gray-700 cursor-pointer">
