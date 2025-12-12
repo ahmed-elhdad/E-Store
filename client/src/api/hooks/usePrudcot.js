@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { defaultInstance } from "../axiosInstant";
+import { defaultInstance } from "../axiosInstance";
 const fetchPrudoct = async ({ queryKey }) => {
   const [, params] = queryKey;
   const response = await defaultInstance.get(`/prudocts/${params.id}`);

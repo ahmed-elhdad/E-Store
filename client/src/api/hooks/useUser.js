@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { defaultInstance } from "../axiosInstant";
+import { defaultInstance } from "../axiosInstance";
 
 const fetchUser = async ({ params }) => {
   const response = defaultInstance.get("/auth/me");

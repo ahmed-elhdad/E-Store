@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { defaultInstance } from "../axiosInstant";
+import { defaultInstance } from "../axiosInstance";
 
 export const useAuth = () => {
   const login = useMutation(async ({ email, password }) => {

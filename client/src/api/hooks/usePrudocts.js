@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { defaultInstance } from "../axiosInstant";
+import { defaultInstance } from "../axiosInstance";
 
 const fetchPrudocts = async ({ queryKey }) => {
   const [, params] = queryKey;
@@ -10,7 +10,6 @@ const fetchPrudocts = async ({ queryKey }) => {
   if (!response) {
     return "error";
   }
-  console.log("response: ", response.data.data);
 
   return await response.data.data;
 };
